@@ -1,15 +1,15 @@
 [
   {
-    "modid": "oyvey",
-    "name": "OyVey",
-    "description": "1.12.2 Anarchy PvP Client",
-    "version": "0.0.3",
+    "modid": "femhack",
+    "name": "Femhack",
+    "description": "Hack for feminine boys",
+    "version": "0.1",
     "mcversion": "1.12.2",
-    "logoFile": "niggahack.png",
-    "url": "https://discordapp.com/invite/WcAx3ps",
+    "logoFile": "",
+    "url": "",
     "updateUrl": "",
     "authorList": [
-      "Alpha432"
+      "Femey"
     ],
     "screenshots": [],
     "dependencies": []

@@ -1,6 +1,6 @@
 package me.Femhack.util;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -182,7 +182,7 @@ public class InventoryUtil
                     switchedItemSwitched[0] = true;
                 } else if (back && switchedItem) {
                     switchedItemSwitched[0] = false;
-                    OyVey.inventoryManager.recoverSilent(lastHotbarSlot);
+                    Femhack.inventoryManager.recoverSilent(lastHotbarSlot);
                 }
                 switchedItemSwitched[1] = true;
                 break;
@@ -214,7 +214,7 @@ public class InventoryUtil
                     switchedItemSwitched[0] = true;
                 } else if (back && switchedItem) {
                     switchedItemSwitched[0] = false;
-                    OyVey.inventoryManager.recoverSilent(lastHotbarSlot);
+                    Femhack.inventoryManager.recoverSilent(lastHotbarSlot);
                 }
                 switchedItemSwitched[1] = true;
                 break;

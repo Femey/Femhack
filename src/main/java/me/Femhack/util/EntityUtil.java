@@ -1,7 +1,7 @@
 package me.Femhack.util;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -454,7 +454,7 @@ public class EntityUtil
     }
 
     public static boolean isntValid(Entity entity, double range) {
-        return entity == null || EntityUtil.isDead(entity) || entity.equals(EntityUtil.mc.player) || entity instanceof EntityPlayer && OyVey.friendManager.isFriend(entity.getName()) || EntityUtil.mc.player.getDistanceSq(entity) > MathUtil.square(range);
+        return entity == null || EntityUtil.isDead(entity) || entity.equals(EntityUtil.mc.player) || entity instanceof EntityPlayer && Femhack.friendManager.isFriend(entity.getName()) || EntityUtil.mc.player.getDistanceSq(entity) > MathUtil.square(range);
     }
 
     public static boolean isValid(Entity entity, double range) {
@@ -539,7 +539,7 @@ public class EntityUtil
 
     public static Color getColor(Entity entity, int red, int green, int blue, int alpha, boolean colorFriends) {
         Color color = new Color((float) red / 255.0f, (float) green / 255.0f, (float) blue / 255.0f, (float) alpha / 255.0f);
-        if (entity instanceof EntityPlayer && colorFriends && OyVey.friendManager.isFriend((EntityPlayer) entity)) {
+        if (entity instanceof EntityPlayer && colorFriends && Femhack.friendManager.isFriend((EntityPlayer) entity)) {
             color = new Color(0.33333334f, 1.0f, 1.0f, (float) alpha / 255.0f);
         }
         return color;
@@ -636,7 +636,7 @@ public class EntityUtil
                 distanceSB.append("c");
             }
             distanceSB.append(distance);
-            output.put(healthSB.toString() + " " + (OyVey.friendManager.isFriend(player) ? ChatFormatting.AQUA : ChatFormatting.RED) + player.getName() + " " + distanceSB.toString() + " \u00c2\u00a7f0", (int) EntityUtil.mc.player.getDistance(player));
+            output.put(healthSB.toString() + " " + (Femhack.friendManager.isFriend(player) ? ChatFormatting.AQUA : ChatFormatting.RED) + player.getName() + " " + distanceSB.toString() + " \u00c2\u00a7f0", (int) EntityUtil.mc.player.getDistance(player));
             healthSB.setLength(0);
             distanceSB.setLength(0);
         }

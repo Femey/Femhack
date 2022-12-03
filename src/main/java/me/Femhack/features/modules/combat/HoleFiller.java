@@ -7,7 +7,6 @@ package me.Femhack.features.modules.combat;
 import me.Femhack.features.modules.Module;
 import me.Femhack.util.*;
 import me.Femhack.features.setting.Setting;
-import me.alpha432.oyvey.util.*;
 import net.minecraft.block.BlockEnderChest;
 import net.minecraft.block.BlockObsidian;
 import net.minecraft.block.material.Material;

@@ -1,7 +1,7 @@
 package me.Femhack.util;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.command.Command;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -171,7 +171,7 @@ public class BlockUtil
             sneaking = true;
         }
         if (rotate) {
-            OyVey.rotationManager.lookAtVec3d(hitVec);
+            Femhack.rotationManager.lookAtVec3d(hitVec);
         }
         BlockUtil.rightClickBlock(neighbour, hitVec, hand, opposite, packet);
         mc.player.swingArm(EnumHand.MAIN_HAND);

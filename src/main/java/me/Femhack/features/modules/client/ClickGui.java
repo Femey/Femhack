@@ -1,10 +1,10 @@
 package me.Femhack.features.modules.client;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.ClientEvent;
 import me.Femhack.features.command.Command;
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.modules.Module;
 import me.Femhack.util.Util;
 import me.Femhack.features.setting.Setting;
@@ -31,7 +31,7 @@ public class ClickGui
     public Setting<Integer> rainbowHue = this.register(new Setting<Object>("Delay", Integer.valueOf(240), Integer.valueOf(0), Integer.valueOf(600), v -> this.rainbow.getValue()));
     public Setting<Float> rainbowBrightness = this.register(new Setting<Object>("Brightness ", Float.valueOf(150.0f), Float.valueOf(1.0f), Float.valueOf(255.0f), v -> this.rainbow.getValue()));
     public Setting<Float> rainbowSaturation = this.register(new Setting<Object>("Saturation", Float.valueOf(150.0f), Float.valueOf(1.0f), Float.valueOf(255.0f), v -> this.rainbow.getValue()));
-    private OyVeyGui click;
+    private FemhackGui click;
 
     public ClickGui() {
         super("ClickGui", "Opens the ClickGui", Module.Category.CLIENT, true, false, false);
@@ -60,27 +60,27 @@ public class ClickGui
     public void onSettingChange(ClientEvent event) {
         if (event.getStage() == 2 && event.getSetting().getFeature().equals(this)) {
             if (event.getSetting().equals(this.prefix)) {
-                OyVey.commandManager.setPrefix(this.prefix.getPlannedValue());
-                Command.sendMessage("Prefix set to " + ChatFormatting.DARK_GRAY + OyVey.commandManager.getPrefix());
+                Femhack.commandManager.setPrefix(this.prefix.getPlannedValue());
+                Command.sendMessage("Prefix set to " + ChatFormatting.DARK_GRAY + Femhack.commandManager.getPrefix());
             }
-            OyVey.colorManager.setColor(this.red.getPlannedValue(), this.green.getPlannedValue(), this.blue.getPlannedValue(), this.hoverAlpha.getPlannedValue());
+            Femhack.colorManager.setColor(this.red.getPlannedValue(), this.green.getPlannedValue(), this.blue.getPlannedValue(), this.hoverAlpha.getPlannedValue());
         }
     }
 
     @Override
     public void onEnable() {
-        Util.mc.displayGuiScreen(OyVeyGui.getClickGui());
+        Util.mc.displayGuiScreen(FemhackGui.getClickGui());
     }
 
     @Override
     public void onLoad() {
-        OyVey.colorManager.setColor(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.hoverAlpha.getValue());
-        OyVey.commandManager.setPrefix(this.prefix.getValue());
+        Femhack.colorManager.setColor(this.red.getValue(), this.green.getValue(), this.blue.getValue(), this.hoverAlpha.getValue());
+        Femhack.commandManager.setPrefix(this.prefix.getValue());
     }
 
     @Override
     public void onTick() {
-        if (!(ClickGui.mc.currentScreen instanceof OyVeyGui)) {
+        if (!(ClickGui.mc.currentScreen instanceof FemhackGui)) {
             this.disable();
         }
     }

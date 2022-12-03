@@ -1,9 +1,9 @@
 package me.Femhack.features;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.manager.TextManager;
 import me.Femhack.util.Util;
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.setting.Setting;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public class Feature
         implements Util {
     public List<Setting> settings = new ArrayList<Setting>();
-    public TextManager renderer = OyVey.textManager;
+    public TextManager renderer = Femhack.textManager;
     private String name;
 
     public Feature() {
@@ -57,8 +57,8 @@ public class Feature
     public Setting register(Setting setting) {
         setting.setFeature(this);
         this.settings.add(setting);
-        if (this instanceof Module && Feature.mc.currentScreen instanceof OyVeyGui) {
-            OyVeyGui.getInstance().updateModule((Module) this);
+        if (this instanceof Module && Feature.mc.currentScreen instanceof FemhackGui) {
+            FemhackGui.getInstance().updateModule((Module) this);
         }
         return setting;
     }
@@ -72,8 +72,8 @@ public class Feature
         if (!removeList.isEmpty()) {
             this.settings.removeAll(removeList);
         }
-        if (this instanceof Module && Feature.mc.currentScreen instanceof OyVeyGui) {
-            OyVeyGui.getInstance().updateModule((Module) this);
+        if (this instanceof Module && Feature.mc.currentScreen instanceof FemhackGui) {
+            FemhackGui.getInstance().updateModule((Module) this);
         }
     }
 

@@ -1,6 +1,6 @@
 package me.Femhack.features.modules.player;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.BlockEvent;
 import me.Femhack.event.events.Render3DEvent;
 import me.Femhack.features.modules.Module;
@@ -75,7 +75,7 @@ public class Speedmine
     @Override
     public void onRender3D(Render3DEvent event) {
         if (this.render.getValue().booleanValue() && this.currentPos != null && this.currentBlockState.getBlock() == Blocks.OBSIDIAN) {
-            Color color = new Color(this.timer.passedMs((int) (2000.0f * OyVey.serverManager.getTpsFactor())) ? 0 : 255, this.timer.passedMs((int) (2000.0f * OyVey.serverManager.getTpsFactor())) ? 255 : 0, 0, 255);
+            Color color = new Color(this.timer.passedMs((int) (2000.0f * Femhack.serverManager.getTpsFactor())) ? 0 : 255, this.timer.passedMs((int) (2000.0f * Femhack.serverManager.getTpsFactor())) ? 255 : 0, 0, 255);
             RenderUtil.drawBoxESP(this.currentPos, color, false, color, this.lineWidth.getValue().floatValue(), this.outline.getValue(), this.box.getValue(), this.boxAlpha.getValue(), false);
         }
     }

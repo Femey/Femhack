@@ -1,7 +1,7 @@
 package me.Femhack.features.modules.misc;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.setting.Setting;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -20,7 +20,7 @@ public class ExtraTab
     public static String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn) {
         String name;
         String string = name = networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
-        if (OyVey.friendManager.isFriend(name)) {
+        if (Femhack.friendManager.isFriend(name)) {
             return ChatFormatting.AQUA + name;
         }
         return name;

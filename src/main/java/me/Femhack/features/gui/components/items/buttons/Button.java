@@ -1,7 +1,7 @@
 package me.Femhack.features.gui.components.items.buttons;
 
-import me.Femhack.OyVey;
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.Femhack;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.gui.components.Component;
 import me.Femhack.features.gui.components.items.Item;
 import me.Femhack.util.RenderUtil;
@@ -21,8 +21,8 @@ public class Button
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width, this.y + (float) this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? OyVey.colorManager.getColorWithAlpha(OyVey.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : OyVey.colorManager.getColorWithAlpha(OyVey.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
-        OyVey.textManager.drawStringWithShadow(this.getName(), this.x + 2.3f, this.y - 2.0f - (float) OyVeyGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
+        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width, this.y + (float) this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
+        Femhack.textManager.drawStringWithShadow(this.getName(), this.x + 2.3f, this.y - 2.0f - (float) FemhackGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class Button
     }
 
     public boolean isHovering(int mouseX, int mouseY) {
-        for (Component component : OyVeyGui.getClickGui().getComponents()) {
+        for (Component component : FemhackGui.getClickGui().getComponents()) {
             if (!component.drag) continue;
             return false;
         }

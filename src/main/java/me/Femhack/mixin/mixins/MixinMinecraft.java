@@ -1,6 +1,6 @@
 package me.Femhack.mixin.mixins;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.KeyEvent;
 import me.Femhack.features.modules.player.MultiTask;
 import net.minecraft.client.Minecraft;
@@ -38,9 +38,9 @@ public abstract class MixinMinecraft {
     }
 
     private void unload() {
-        OyVey.LOGGER.info("Initiated client shutdown.");
-        OyVey.onUnload();
-        OyVey.LOGGER.info("Finished client shutdown.");
+        Femhack.LOGGER.info("Initiated client shutdown.");
+        Femhack.onUnload();
+        Femhack.LOGGER.info("Finished client shutdown.");
     }
 
     @Redirect(method = {"sendClickBlockToController"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isHandActive()Z"))

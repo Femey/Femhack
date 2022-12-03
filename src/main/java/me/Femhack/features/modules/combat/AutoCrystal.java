@@ -1,6 +1,6 @@
 package me.Femhack.features.modules.combat;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.PacketEvent;
 import me.Femhack.event.events.Render3DEvent;
 import me.Femhack.features.modules.Module;
@@ -10,7 +10,6 @@ import me.Femhack.util.*;
 import me.Femhack.util.Timer;
 import me.Femhack.util.Util;
 import me.Femhack.features.setting.Setting;
-import me.alpha432.oyvey.util.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -292,7 +291,7 @@ public class AutoCrystal
             }
             this.realTarget = this.target;
             if (AutoGG.getINSTANCE().isOn()) {
-                AutoGG autoGG = (AutoGG) OyVey.moduleManager.getModuleByName("AutoGG");
+                AutoGG autoGG = (AutoGG) Femhack.moduleManager.getModuleByName("AutoGG");
                 autoGG.addTargetedPlayer(this.target.getName());
             }
             if (this.hotBarSlot != -1 && this.autoswitch.getValue().booleanValue() && !AutoCrystal.mc.player.isPotionActive(MobEffects.WEAKNESS)) {
@@ -418,7 +417,7 @@ public class AutoCrystal
     EntityPlayer getTarget() {
         EntityPlayer closestPlayer = null;
         for (EntityPlayer entity : AutoCrystal.mc.world.playerEntities) {
-            if (AutoCrystal.mc.player == null || AutoCrystal.mc.player.isDead || entity.isDead || entity == AutoCrystal.mc.player || OyVey.friendManager.isFriend(entity.getName()) || entity.getDistance(AutoCrystal.mc.player) > 12.0f)
+            if (AutoCrystal.mc.player == null || AutoCrystal.mc.player.isDead || entity.isDead || entity == AutoCrystal.mc.player || Femhack.friendManager.isFriend(entity.getName()) || entity.getDistance(AutoCrystal.mc.player) > 12.0f)
                 continue;
             this.armorTarget = false;
             for (ItemStack is : entity.getArmorInventoryList()) {

@@ -1,6 +1,6 @@
 package me.Femhack.features.command.commands;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.command.Command;
 
 public class UnloadCommand
@@ -11,7 +11,7 @@ public class UnloadCommand
 
     @Override
     public void execute(String[] commands) {
-        OyVey.unload(true);
+        Femhack.unload(true);
     }
 }
 

@@ -1,6 +1,6 @@
 package me.Femhack.features.gui;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.Feature;
 import me.Femhack.features.gui.components.Component;
 import me.Femhack.features.gui.components.items.Item;
@@ -13,31 +13,30 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-public class OyVeyGui
+public class FemhackGui
         extends GuiScreen {
-    private static OyVeyGui oyveyGui;
-    private static OyVeyGui INSTANCE;
+    private static FemhackGui INSTANCE;
 
     static {
-        INSTANCE = new OyVeyGui();
+        INSTANCE = new FemhackGui();
     }
 
     private final ArrayList<Component> components = new ArrayList();
 
-    public OyVeyGui() {
+    public FemhackGui() {
         this.setInstance();
         this.load();
     }
 
-    public static OyVeyGui getInstance() {
+    public static FemhackGui getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new OyVeyGui();
+            INSTANCE = new FemhackGui();
         }
         return INSTANCE;
     }
 
-    public static OyVeyGui getClickGui() {
-        return OyVeyGui.getInstance();
+    public static FemhackGui getClickGui() {
+        return FemhackGui.getInstance();
     }
 
     private void setInstance() {
@@ -46,13 +45,13 @@ public class OyVeyGui
 
     private void load() {
         int x = -84;
-        for (final Module.Category category : OyVey.moduleManager.getCategories()) {
+        for (final Module.Category category : Femhack.moduleManager.getCategories()) {
             this.components.add(new Component(category.getName(), x += 90, 4, true) {
 
                 @Override
                 public void setupItems() {
                     counter1 = new int[]{1};
-                    OyVey.moduleManager.getModulesByCategory(category).forEach(module -> {
+                    Femhack.moduleManager.getModulesByCategory(category).forEach(module -> {
                         if (!module.hidden) {
                             this.addButton(new ModuleButton(module));
                         }

@@ -1,8 +1,8 @@
 package me.Femhack.features.gui.components.items.buttons;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.Femhack;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.util.RenderUtil;
 import me.Femhack.util.Util;
 import me.Femhack.features.modules.client.ClickGui;
@@ -33,11 +33,11 @@ public class StringButton
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width + 7.4f, this.y + (float) this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? OyVey.colorManager.getColorWithAlpha(OyVey.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : OyVey.colorManager.getColorWithAlpha(OyVey.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
+        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width + 7.4f, this.y + (float) this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
         if (this.isListening) {
-            OyVey.textManager.drawStringWithShadow(this.currentString.getString() + OyVey.textManager.getIdleSign(), this.x + 2.3f, this.y - 1.7f - (float) OyVeyGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
+            Femhack.textManager.drawStringWithShadow(this.currentString.getString() + Femhack.textManager.getIdleSign(), this.x + 2.3f, this.y - 1.7f - (float) FemhackGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
         } else {
-            OyVey.textManager.drawStringWithShadow((this.setting.getName().equals("Buttons") ? "Buttons " : (this.setting.getName().equals("Prefix") ? "Prefix  " + ChatFormatting.GRAY : "")) + this.setting.getValue(), this.x + 2.3f, this.y - 1.7f - (float) OyVeyGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
+            Femhack.textManager.drawStringWithShadow((this.setting.getName().equals("Buttons") ? "Buttons " : (this.setting.getName().equals("Prefix") ? "Prefix  " + ChatFormatting.GRAY : "")) + this.setting.getValue(), this.x + 2.3f, this.y - 1.7f - (float) FemhackGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
         }
     }
 

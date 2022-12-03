@@ -1,7 +1,7 @@
 package me.Femhack.manager;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.PacketEvent;
 import me.Femhack.features.Feature;
 import me.Femhack.features.command.Command;
@@ -17,7 +17,7 @@ public class ReloadManager
         this.prefix = prefix;
         MinecraftForge.EVENT_BUS.register(this);
         if (!ReloadManager.fullNullCheck()) {
-            Command.sendMessage(ChatFormatting.RED + "OyVey has been unloaded. Type " + prefix + "reload to reload.");
+            Command.sendMessage(ChatFormatting.RED + "Femhack has been unloaded. Type " + prefix + "reload to reload.");
         }
     }
 
@@ -29,7 +29,7 @@ public class ReloadManager
     public void onPacketSend(PacketEvent.Send event) {
         CPacketChatMessage packet;
         if (event.getPacket() instanceof CPacketChatMessage && (packet = event.getPacket()).getMessage().startsWith(this.prefix) && packet.getMessage().contains("reload")) {
-            OyVey.load();
+            Femhack.load();
             event.setCanceled(true);
         }
     }

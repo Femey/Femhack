@@ -1,7 +1,7 @@
 package me.Femhack.features.command.commands;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.command.Command;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.setting.Bind;
@@ -21,7 +21,7 @@ public class BindCommand
         }
         String rkey = commands[1];
         String moduleName = commands[0];
-        Module module = OyVey.moduleManager.getModuleByName(moduleName);
+        Module module = Femhack.moduleManager.getModuleByName(moduleName);
         if (module == null) {
             BindCommand.sendMessage("Unknown module '" + module + "'!");
             return;

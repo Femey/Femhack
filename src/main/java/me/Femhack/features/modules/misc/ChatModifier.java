@@ -1,6 +1,6 @@
 package me.Femhack.features.modules.misc;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.PacketEvent;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.setting.Setting;
@@ -34,7 +34,7 @@ public class ChatModifier
     public void onPacketSend(PacketEvent.Send event) {
         if (event.getPacket() instanceof CPacketChatMessage) {
             String s = ((CPacketChatMessage) event.getPacket()).getMessage();
-            this.check = !s.startsWith(OyVey.commandManager.getPrefix());
+            this.check = !s.startsWith(Femhack.commandManager.getPrefix());
         }
     }
 }

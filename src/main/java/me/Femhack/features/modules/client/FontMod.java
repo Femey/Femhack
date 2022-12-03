@@ -1,7 +1,7 @@
 package me.Femhack.features.modules.client;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.ClientEvent;
 import me.Femhack.features.command.Command;
 import me.Femhack.features.modules.Module;
@@ -64,7 +64,7 @@ public class FontMod
     @Override
     public void onTick() {
         if (this.reloadFont) {
-            OyVey.textManager.init(false);
+            Femhack.textManager.init(false);
             this.reloadFont = false;
         }
     }

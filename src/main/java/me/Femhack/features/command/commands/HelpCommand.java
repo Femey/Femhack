@@ -1,7 +1,7 @@
 package me.Femhack.features.command.commands;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.command.Command;
 
 public class HelpCommand
@@ -13,8 +13,8 @@ public class HelpCommand
     @Override
     public void execute(String[] commands) {
         HelpCommand.sendMessage("Commands: ");
-        for (Command command : OyVey.commandManager.getCommands()) {
-            HelpCommand.sendMessage(ChatFormatting.GRAY + OyVey.commandManager.getPrefix() + command.getName());
+        for (Command command : Femhack.commandManager.getCommands()) {
+            HelpCommand.sendMessage(ChatFormatting.GRAY + Femhack.commandManager.getPrefix() + command.getName());
         }
     }
 }

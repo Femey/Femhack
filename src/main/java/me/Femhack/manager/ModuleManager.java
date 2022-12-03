@@ -1,7 +1,7 @@
 package me.Femhack.manager;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.Render2DEvent;
 import me.Femhack.event.events.Render3DEvent;
 import me.Femhack.features.modules.combat.*;
@@ -11,16 +11,11 @@ import me.Femhack.features.modules.player.*;
 import me.Femhack.features.modules.render.*;
 import me.Femhack.util.Util;
 import me.Femhack.features.Feature;
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.modules.client.ClickGui;
 import me.Femhack.features.modules.client.FontMod;
 import me.Femhack.features.modules.client.HUD;
-import me.alpha432.oyvey.features.modules.combat.*;
-import me.alpha432.oyvey.features.modules.misc.*;
-import me.alpha432.oyvey.features.modules.movement.*;
-import me.alpha432.oyvey.features.modules.player.*;
-import me.alpha432.oyvey.features.modules.render.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.EventBus;
 import org.lwjgl.input.Keyboard;
@@ -238,7 +233,7 @@ public class ModuleManager
     }
 
     public void onKeyPressed(int eventKey) {
-        if (eventKey == 0 || !Keyboard.getEventKeyState() || ModuleManager.mc.currentScreen instanceof OyVeyGui) {
+        if (eventKey == 0 || !Keyboard.getEventKeyState() || ModuleManager.mc.currentScreen instanceof FemhackGui) {
             return;
         }
         this.modules.forEach(module -> {
@@ -283,7 +278,7 @@ public class ModuleManager
                 }
             } else {
                 for (String e : ModuleManager.this.sortedModulesABC) {
-                    Module module = OyVey.moduleManager.getModuleByName(e);
+                    Module module = Femhack.moduleManager.getModuleByName(e);
                     String text = module.getDisplayName() + ChatFormatting.GRAY + (module.getDisplayInfo() != null ? " [" + ChatFormatting.WHITE + module.getDisplayInfo() + ChatFormatting.GRAY + "]" : "");
                     module.offset = (float) ModuleManager.this.renderer.getStringWidth(text) / HUD.getInstance().animationHorizontalTime.getValue().floatValue();
                     module.vOffset = (float) ModuleManager.this.renderer.getFontHeight() / HUD.getInstance().animationVerticalTime.getValue().floatValue();

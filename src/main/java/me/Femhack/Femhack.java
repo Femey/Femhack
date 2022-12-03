@@ -1,7 +1,6 @@
 package me.Femhack;
 
 import me.Femhack.manager.*;
-import me.alpha432.oyvey.manager.*;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -9,12 +8,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
-@Mod(modid = "oyvey", name = "OyVey", version = "0.0.3")
-public class OyVey {
-    public static final String MODID = "oyvey";
-    public static final String MODNAME = "OyVey";
+@Mod(modid = "femhack", name = "Femhack", version = "0.1")
+public class Femhack {
+    public static final String MODID = "femhack";
+    public static final String MODNAME = "Femhack";
     public static final String MODVER = "0.0.3";
-    public static final Logger LOGGER = LogManager.getLogger("OyVey");
+    public static final Logger LOGGER = LogManager.getLogger("Femhack");
     public static CommandManager commandManager;
     public static FriendManager friendManager;
     public static ModuleManager moduleManager;
@@ -33,7 +32,7 @@ public class OyVey {
     public static EventManager eventManager;
     public static TextManager textManager;
     @Mod.Instance
-    public static OyVey INSTANCE;
+    public static Femhack INSTANCE;
     private static boolean unloaded;
 
     static {
@@ -41,7 +40,7 @@ public class OyVey {
     }
 
     public static void load() {
-        LOGGER.info("\n\nLoading OyVey by Alpha432");
+        LOGGER.info("\n\nLoading Femhack by Femey");
         unloaded = false;
         if (reloadManager != null) {
             reloadManager.unload();
@@ -71,16 +70,16 @@ public class OyVey {
         LOGGER.info("EventManager loaded.");
         textManager.init(true);
         moduleManager.onLoad();
-        LOGGER.info("OyVey successfully loaded!\n");
+        LOGGER.info("Femhack successfully loaded!\n");
     }
 
     public static void unload(boolean unload) {
-        LOGGER.info("\n\nUnloading OyVey by Alpha432");
+        LOGGER.info("\n\nUnloading Femhack by Femey");
         if (unload) {
             reloadManager = new ReloadManager();
             reloadManager.init(commandManager != null ? commandManager.getPrefix() : ".");
         }
-        OyVey.onUnload();
+        Femhack.onUnload();
         eventManager = null;
         friendManager = null;
         speedManager = null;
@@ -96,19 +95,19 @@ public class OyVey {
         inventoryManager = null;
         moduleManager = null;
         textManager = null;
-        LOGGER.info("OyVey unloaded!\n");
+        LOGGER.info("Femhack unloaded!\n");
     }
 
     public static void reload() {
-        OyVey.unload(false);
-        OyVey.load();
+        Femhack.unload(false);
+        Femhack.load();
     }
 
     public static void onUnload() {
         if (!unloaded) {
             eventManager.onUnload();
             moduleManager.onUnload();
-            configManager.saveConfig(OyVey.configManager.config.replaceFirst("oyvey/", ""));
+            configManager.saveConfig(Femhack.configManager.config.replaceFirst("Femhack/", ""));
             moduleManager.onUnloadPost();
             unloaded = true;
         }
@@ -116,13 +115,13 @@ public class OyVey {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        LOGGER.info("I am gona gas you kike - Alpha432");
+        LOGGER.info("Femboys > Women");
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        Display.setTitle("OyVey v0.0.3");
-        OyVey.load();
+        Display.setTitle("Femhack v0.1");
+        Femhack.load();
     }
 }
 

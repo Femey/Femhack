@@ -1,12 +1,11 @@
 package me.Femhack.features.modules.combat;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.command.Command;
 import me.Femhack.features.modules.Module;
 import me.Femhack.util.*;
 import me.Femhack.features.setting.Setting;
-import me.alpha432.oyvey.util.*;
 import net.minecraft.block.BlockWeb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
@@ -140,7 +139,7 @@ public class AutoWeb
         EntityPlayer target = null;
         double distance = Math.pow(range, 2.0) + 1.0;
         for (EntityPlayer player : AutoWeb.mc.world.playerEntities) {
-            if (EntityUtil.isntValid(player, range) || player.isInWeb || OyVey.speedManager.getPlayerSpeed(player) > 30.0)
+            if (EntityUtil.isntValid(player, range) || player.isInWeb || Femhack.speedManager.getPlayerSpeed(player) > 30.0)
                 continue;
             if (target == null) {
                 target = player;

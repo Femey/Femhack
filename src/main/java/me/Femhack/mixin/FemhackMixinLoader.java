@@ -1,6 +1,6 @@
 package me.Femhack.mixin;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
@@ -8,16 +8,16 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
-public class OyVeyLoader
+public class FemhackMixinLoader
         implements IFMLLoadingPlugin {
     private static boolean isObfuscatedEnvironment = false;
 
-    public OyVeyLoader() {
-        OyVey.LOGGER.info("\n\nLoading mixins by Alpha432");
+    public FemhackMixinLoader() {
+        Femhack.LOGGER.info("\n\nLoading mixins by Femey");
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.oyvey.json");
+        Mixins.addConfiguration("mixins.Femhack.json");
         MixinEnvironment.getDefaultEnvironment().setObfuscationContext("searge");
-        OyVey.LOGGER.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
+        Femhack.LOGGER.info(MixinEnvironment.getDefaultEnvironment().getObfuscationContext());
     }
 
     public String[] getASMTransformerClass() {

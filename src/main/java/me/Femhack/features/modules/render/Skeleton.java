@@ -1,6 +1,6 @@
 package me.Femhack.features.modules.render;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.Render3DEvent;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.modules.client.ClickGui;
@@ -65,7 +65,7 @@ public class Skeleton
             GL11.glPushMatrix();
             GL11.glEnable(2848);
             GL11.glLineWidth(this.lineWidth.getValue().floatValue());
-            if (OyVey.friendManager.isFriend(e.getName())) {
+            if (Femhack.friendManager.isFriend(e.getName())) {
                 GlStateManager.color(0.0f, 191.0f, 230.0f, (float) this.alpha.getValue().intValue());
             } else {
                 GlStateManager.color((float) ClickGui.getInstance().red.getValue().intValue() / 255.0f, (float) ClickGui.getInstance().green.getValue().intValue() / 255.0f, (float) ClickGui.getInstance().blue.getValue().intValue() / 255.0f, (float) this.alpha.getValue().intValue());

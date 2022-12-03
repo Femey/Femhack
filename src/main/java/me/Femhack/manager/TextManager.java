@@ -1,6 +1,6 @@
 package me.Femhack.manager;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.util.Timer;
 import me.Femhack.features.Feature;
 import me.Femhack.features.gui.font.CustomFont;
@@ -23,7 +23,7 @@ public class TextManager
     }
 
     public void init(boolean startup) {
-        FontMod cFont = OyVey.moduleManager.getModuleByClass(FontMod.class);
+        FontMod cFont = Femhack.moduleManager.getModuleByClass(FontMod.class);
         try {
             this.setFontRenderer(new Font(cFont.fontName.getValue(), cFont.fontStyle.getValue(), cFont.fontSize.getValue()), cFont.antiAlias.getValue(), cFont.fractionalMetrics.getValue());
         } catch (Exception exception) {
@@ -36,7 +36,7 @@ public class TextManager
     }
 
     public void drawString(String text, float x, float y, int color, boolean shadow) {
-        if (OyVey.moduleManager.isModuleEnabled(FontMod.getInstance().getName())) {
+        if (Femhack.moduleManager.isModuleEnabled(FontMod.getInstance().getName())) {
             if (shadow) {
                 this.customFont.drawStringWithShadow(text, x, y, color);
             } else {
@@ -48,14 +48,14 @@ public class TextManager
     }
 
     public int getStringWidth(String text) {
-        if (OyVey.moduleManager.isModuleEnabled(FontMod.getInstance().getName())) {
+        if (Femhack.moduleManager.isModuleEnabled(FontMod.getInstance().getName())) {
             return this.customFont.getStringWidth(text);
         }
         return TextManager.mc.fontRenderer.getStringWidth(text);
     }
 
     public int getFontHeight() {
-        if (OyVey.moduleManager.isModuleEnabled(FontMod.getInstance().getName())) {
+        if (Femhack.moduleManager.isModuleEnabled(FontMod.getInstance().getName())) {
             String text = "A";
             return this.customFont.getStringHeight(text);
         }

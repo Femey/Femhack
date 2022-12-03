@@ -34,7 +34,7 @@ minecraft {
     version = project.forgeVersion
     runDir = 'run'
     mappings = project.mcpVersion
-    coreMod = 'me.alpha432.oyvey.mixin.OyVeyMixinLoader'
+    coreMod = 'me.Femhack.mixin.FemhackMixinLoader'
     makeObfSourceJar = false
 }
 
@@ -94,7 +94,7 @@ shadowJar {
 
 mixin {
     defaultObfuscationEnv searge
-    add sourceSets.main, 'mixins.oyvey.refmap.json'
+    add sourceSets.main, 'mixins.Femhack.refmap.json'
 
 }
 
@@ -108,13 +108,13 @@ reobf {
 jar {
     manifest {
         attributes(
-                'MixinConfigs': 'mixins.oyvey.json',
+                'MixinConfigs': 'mixins.Femhack.json',
                 'tweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
                 'TweakOrder': 0,
                 'FMLCorePluginContainsFMLMod': 'true',
-                'FMLCorePlugin': 'me.alpha432.oyvey.mixin.OyVeyMixinLoader',
+                'FMLCorePlugin': 'me.Femhack.mixin.FemhackMixinLoader',
                 'ForceLoadAsMod': 'true',
-                'FMLAT': 'oyvey_at.cfg'
+                'FMLAT': 'femhack_at.cfg'
         )
     }
 }

@@ -1,6 +1,6 @@
 package me.Femhack.manager;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.Feature;
 import me.Femhack.features.modules.Module;
 
@@ -19,12 +19,12 @@ import java.util.stream.Stream;
 
 public class FileManager
         extends Feature {
-    private final Path base = this.getMkDirectory(this.getRoot(), "oyvey");
+    private final Path base = this.getMkDirectory(this.getRoot(), "Femhack");
     private final Path config = this.getMkDirectory(this.base, "config");
 
     public FileManager() {
         this.getMkDirectory(this.base, "pvp");
-        for (Module.Category category : OyVey.moduleManager.getCategories()) {
+        for (Module.Category category : Femhack.moduleManager.getCategories()) {
             this.getMkDirectory(this.config, category.getName());
         }
     }

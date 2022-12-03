@@ -4,7 +4,6 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.features.Feature;
 import me.Femhack.features.command.Command;
 import me.Femhack.features.command.commands.*;
-import me.alpha432.oyvey.features.command.commands.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -12,7 +11,7 @@ import java.util.LinkedList;
 public class CommandManager
         extends Feature {
     private final ArrayList<Command> commands = new ArrayList();
-    private String clientMessage = "<OyVey>";
+    private String clientMessage = "<Femhack>";
     private String prefix = ".";
 
     public CommandManager() {

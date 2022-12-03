@@ -1,6 +1,6 @@
 package me.Femhack.features.modules.combat;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.event.events.UpdateWalkingPlayerEvent;
 import me.Femhack.features.modules.Module;
 import me.Femhack.util.DamageUtil;
@@ -48,14 +48,14 @@ public class Killaura extends Module {
             target = null;
             return;
         }
-        int wait = !this.delay.getValue().booleanValue() ? 0 : (int) (DamageUtil.getCooldownByWeapon(mc.player) * (this.tps.getValue().booleanValue() ? OyVey.serverManager.getTpsFactor() : 1.0F));
+        int wait = !this.delay.getValue().booleanValue() ? 0 : (int) (DamageUtil.getCooldownByWeapon(mc.player) * (this.tps.getValue().booleanValue() ? Femhack.serverManager.getTpsFactor() : 1.0F));
         if (!this.timer.passedMs(wait))
             return;
         target = getTarget();
         if (target == null)
             return;
         if (this.rotate.getValue().booleanValue())
-            OyVey.rotationManager.lookAtEntity(target);
+            Femhack.rotationManager.lookAtEntity(target);
         EntityUtil.attackEntity(target, this.packet.getValue().booleanValue(), true);
         this.timer.reset();
     }

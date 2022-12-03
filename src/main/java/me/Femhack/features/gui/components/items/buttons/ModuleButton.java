@@ -1,6 +1,6 @@
 package me.Femhack.features.gui.components.items.buttons;
 
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.gui.components.Component;
 import me.Femhack.features.gui.components.items.Item;
 import me.Femhack.util.Util;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ModuleButton
         extends Button {
     private final Module module;
-    private final ResourceLocation logo = new ResourceLocation("textures/oyvey.png");
+    private final ResourceLocation logo = new ResourceLocation("textures/Femhack.png");
     private List<Item> items = new ArrayList<Item>();
     private boolean subOpen;
 
@@ -76,7 +76,7 @@ public class ModuleButton
         if (!this.items.isEmpty()) {
             if (HUD.getInstance().magenDavid.getValue().booleanValue()) {
                 Util.mc.getTextureManager().bindTexture(this.logo);
-                ModuleButton.drawCompleteImage(this.x - 1.5f + (float) this.width - 7.4f, this.y - 2.2f - (float) OyVeyGui.getClickGui().getTextOffset(), 8, 8);
+                ModuleButton.drawCompleteImage(this.x - 1.5f + (float) this.width - 7.4f, this.y - 2.2f - (float) FemhackGui.getClickGui().getTextOffset(), 8, 8);
             }
             if (this.subOpen) {
                 float height = 1.0f;

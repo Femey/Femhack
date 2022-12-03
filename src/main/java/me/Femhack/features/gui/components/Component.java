@@ -1,8 +1,8 @@
 package me.Femhack.features.gui.components;
 
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.Feature;
-import me.Femhack.features.gui.OyVeyGui;
+import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.util.ColorUtil;
 import me.Femhack.util.RenderUtil;
 import me.Femhack.features.gui.components.items.Item;
@@ -58,7 +58,7 @@ public class Component
         if (this.open) {
             RenderUtil.drawRect(this.x, (float) this.y + 12.5f, this.x + this.width, (float) (this.y + this.height) + totalItemHeight, 0x77000000);
         }
-        OyVey.textManager.drawStringWithShadow(this.getName(), (float) this.x + 3.0f, (float) this.y - 4.0f - (float) OyVeyGui.getClickGui().getTextOffset(), -1);
+        Femhack.textManager.drawStringWithShadow(this.getName(), (float) this.x + 3.0f, (float) this.y - 4.0f - (float) FemhackGui.getClickGui().getTextOffset(), -1);
         if (this.open) {
             float y = (float) (this.getY() + this.getHeight()) - 3.0f;
             for (Item item : this.getItems()) {
@@ -76,7 +76,7 @@ public class Component
         if (mouseButton == 0 && this.isHovering(mouseX, mouseY)) {
             this.x2 = this.x - mouseX;
             this.y2 = this.y - mouseY;
-            OyVeyGui.getClickGui().getComponents().forEach(component -> {
+            FemhackGui.getClickGui().getComponents().forEach(component -> {
                 if (component.drag) {
                     component.drag = false;
                 }

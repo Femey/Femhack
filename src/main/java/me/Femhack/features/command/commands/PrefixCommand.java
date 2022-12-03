@@ -1,7 +1,7 @@
 package me.Femhack.features.command.commands;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.OyVey;
+import me.Femhack.Femhack;
 import me.Femhack.features.command.Command;
 
 public class PrefixCommand
@@ -13,10 +13,10 @@ public class PrefixCommand
     @Override
     public void execute(String[] commands) {
         if (commands.length == 1) {
-            Command.sendMessage(ChatFormatting.GREEN + "Current prefix is " + OyVey.commandManager.getPrefix());
+            Command.sendMessage(ChatFormatting.GREEN + "Current prefix is " + Femhack.commandManager.getPrefix());
             return;
         }
-        OyVey.commandManager.setPrefix(commands[0]);
+        Femhack.commandManager.setPrefix(commands[0]);
         Command.sendMessage("Prefix changed to " + ChatFormatting.GRAY + commands[0]);
     }
 }
