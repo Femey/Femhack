@@ -1,7 +1,6 @@
 package me.Femhack.features.modules.client;
 
 import me.Femhack.features.setting.Setting;
-import me.Femhack.Femhack;
 import me.Femhack.features.modules.Module;
 import me.Femhack.util.ColorUtil;
 

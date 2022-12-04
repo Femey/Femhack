@@ -105,6 +105,7 @@ public class ModuleManager
         this.modules.add(new AutoMinecart());
         this.modules.add(new SelfFill());
         this.modules.add(new ArrowESP());
+        this.modules.add(new FemboyESP());
     }
 
     public Module getModuleByName(String name) {
