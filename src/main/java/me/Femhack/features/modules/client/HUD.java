@@ -353,34 +353,42 @@ public class HUD extends Module {
         }
     }
 
-    public void renderArmorHUD(boolean percent) {
-        int width = this.renderer.scaledWidth;
-        int height = this.renderer.scaledHeight;
+    public void renderArmorHUD(final boolean percent) {
+        final int width = this.renderer.scaledWidth;
+        final int height = this.renderer.scaledHeight;
         GlStateManager.enableTexture2D();
-        int i = width / 2;
+        final int i = width / 2;
         int iteration = 0;
-        int y = height - 55 - ((Util.mc.player.isInWater() && Util.mc.playerController.gameIsSurvivalOrAdventure()) ? 10 : 0);
-        for (ItemStack is : Util.mc.player.inventory.armorInventory) {
-            iteration++;
-            if (is.isEmpty())
+        final int y = height - 55 - ((HUD.mc.player.isInWater() && HUD.mc.playerController.gameIsSurvivalOrAdventure()) ? 10 : 0);
+        for (final ItemStack is : HUD.mc.player.inventory.armorInventory) {
+            ++iteration;
+            if (is.isEmpty()) {
                 continue;
-            int x = i - 90 + (9 - iteration) * 20 + 2;
+            }
+            final int x = i - 90 + (9 - iteration) * 20 + 2;
             GlStateManager.enableDepth();
-            RenderUtil.itemRender.zLevel = 200.0F;
+            RenderUtil.itemRender.zLevel = 200.0f;
             RenderUtil.itemRender.renderItemAndEffectIntoGUI(is, x, y);
-            RenderUtil.itemRender.renderItemOverlayIntoGUI(Util.mc.fontRenderer, is, x, y, "");
-            RenderUtil.itemRender.zLevel = 0.0F;
+            RenderUtil.itemRender.renderItemOverlayIntoGUI(HUD.mc.fontRenderer, is, x, y, "");
+            RenderUtil.itemRender.zLevel = 0.0f;
             GlStateManager.enableTexture2D();
             GlStateManager.disableLighting();
             GlStateManager.disableDepth();
-            String s = (is.getCount() > 1) ? (is.getCount() + "") : "";
-            this.renderer.drawStringWithShadow(s, (x + 19 - 2 - this.renderer.getStringWidth(s)), (y + 9), 16777215);
-            if (percent) {
-                float green = (is.getMaxDamage() - is.getItemDamage()) / is.getMaxDamage();
-                float red = 1.0F - green;
-                int dmg = 100 - (int) (red * 100.0F);
-                this.renderer.drawStringWithShadow(dmg + "", (x + 8 - this.renderer.getStringWidth(dmg + "") / 2), (y - 11), ColorUtil.toRGBA((int) (red * 255.0F), (int) (green * 255.0F), 0));
+            final String s = (is.getCount() > 1) ? (is.getCount() + "") : "";
+            this.renderer.drawStringWithShadow(s, (float) (x + 19 - 2 - this.renderer.getStringWidth(s)), (float) (y + 9), 16777215);
+            if (!percent) {
+                continue;
             }
+            int dmg = 0;
+            final int itemDurability = is.getMaxDamage() - is.getItemDamage();
+            final float green = (is.getMaxDamage() - (float) is.getItemDamage()) / is.getMaxDamage();
+            final float red = 1.0f - green;
+            if (percent) {
+                dmg = 100 - (int) (red * 100.0f);
+            } else {
+                dmg = itemDurability;
+            }
+            this.renderer.drawStringWithShadow(dmg + "", (float) (x + 8 - this.renderer.getStringWidth(dmg + "") / 2), (float) (y - 11), ColorUtil.toRGBA((int) (red * 255.0f), (int) (green * 255.0f), 0));
         }
         GlStateManager.enableDepth();
         GlStateManager.disableLighting();
