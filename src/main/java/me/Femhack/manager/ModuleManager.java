@@ -75,6 +75,7 @@ public class ModuleManager
         this.modules.add(new Killaura());
         this.modules.add(new AutoRickRoll());
         this.modules.add(new Anchor());
+        this.modules.add(new Freecam());
         this.modules.add(new Ambience());
         this.modules.add(new ViewModel());
         this.modules.add(new SlowSwing());

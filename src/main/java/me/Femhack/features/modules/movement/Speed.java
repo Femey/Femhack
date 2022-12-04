@@ -1,45 +1,59 @@
 package me.Femhack.features.modules.movement;
 
+import me.Femhack.features.setting.Setting;
 import me.Femhack.Femhack;
-import me.Femhack.event.events.ClientEvent;
 import me.Femhack.event.events.MoveEvent;
+import me.Femhack.event.events.PacketEvent;
 import me.Femhack.event.events.UpdateWalkingPlayerEvent;
 import me.Femhack.features.modules.Module;
-import me.Femhack.features.setting.Setting;
-import me.Femhack.util.BlockUtil;
+import me.Femhack.features.modules.player.Freecam;
 import me.Femhack.util.EntityUtil;
-import me.Femhack.util.MathUtil;
+import me.Femhack.util.Timer;
 import net.minecraft.init.MobEffects;
-import net.minecraft.util.MovementInput;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
-import java.util.Random;
 
 public class Speed
         extends Module {
-    private static Speed INSTANCE = new Speed();
-    public Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.INSTANT));
-    public Setting<Boolean> strafeJump = this.register(new Setting<Object>("Jump", Boolean.valueOf(false), v -> this.mode.getValue() == Mode.INSTANT));
-    public Setting<Boolean> noShake = this.register(new Setting<Object>("NoShake", Boolean.valueOf(true), v -> this.mode.getValue() != Mode.INSTANT));
-    public Setting<Double> zeroSpeed = this.register(new Setting<Object>("0-Speed", Double.valueOf(0.0), Double.valueOf(0.0), Double.valueOf(100.0), v -> this.mode.getValue() == Mode.VANILLA));
-    public Setting<Double> speed = this.register(new Setting<Object>("Speed", Double.valueOf(10.0), Double.valueOf(0.1), Double.valueOf(100.0), v -> this.mode.getValue() == Mode.VANILLA));
-    public Setting<Double> blocked = this.register(new Setting<Object>("Blocked", Double.valueOf(10.0), Double.valueOf(0.0), Double.valueOf(100.0), v -> this.mode.getValue() == Mode.VANILLA));
-    public Setting<Double> unblocked = this.register(new Setting<Object>("Unblocked", Double.valueOf(10.0), Double.valueOf(0.0), Double.valueOf(100.0), v -> this.mode.getValue() == Mode.VANILLA));
-    public double startY = 0.0;
-    public boolean antiShake = false;
-    public double minY = 0.0;
-    public boolean changeY = false;
-    private double highChainVal = 0.0;
-    private double lowChainVal = 0.0;
-    private boolean oneTime = false;
-    private double bounceHeight = 0.4;
-    private float move = 0.26f;
-    private int vanillaCounter = 0;
+    private static Speed INSTANCE;
+    private final Setting<Mode> mode = this.register(new Setting<Mode>("Mode", Mode.NCP));
+    private final Setting<Boolean> limiter = this.register(new Setting<Boolean>("SetGround", true));
+    private final Setting<Boolean> bhop2 = this.register(new Setting<Boolean>("Hop", true));
+    private final Setting<Boolean> limiter2 = this.register(new Setting<Boolean>("Bhop", false));
+    private final Setting<Boolean> noLag = this.register(new Setting<Boolean>("NoLag", false));
+    private final Setting<Integer> specialMoveSpeed = this.register(new Setting<Integer>("Speed", 100, 0, 150));
+    private final Setting<Integer> potionSpeed = this.register(new Setting<Integer>("Speed1", 130, 0, 150));
+    private final Setting<Integer> potionSpeed2 = this.register(new Setting<Integer>("Speed2", 125, 0, 150));
+    private final Setting<Integer> dFactor = this.register(new Setting<Integer>("DFactor", 159, 100, 200));
+    private final Setting<Integer> acceleration = this.register(new Setting<Integer>("Accel", 2149, 1000, 2500));
+    private final Setting<Float> speedLimit = this.register(new Setting<Float>("SpeedLimit", Float.valueOf(35.0f), Float.valueOf(20.0f), Float.valueOf(60.0f)));
+    private final Setting<Float> speedLimit2 = this.register(new Setting<Float>("SpeedLimit2", Float.valueOf(60.0f), Float.valueOf(20.0f), Float.valueOf(60.0f)));
+    private final Setting<Integer> yOffset = this.register(new Setting<Integer>("YOffset", 400, 350, 500));
+    private final Setting<Boolean> potion = this.register(new Setting<Boolean>("Potion", false));
+    private final Setting<Boolean> wait = this.register(new Setting<Boolean>("Wait", true));
+    private final Setting<Boolean> hopWait = this.register(new Setting<Boolean>("HopWait", true));
+    private final Setting<Integer> startStage = this.register(new Setting<Integer>("Stage", 2, 0, 4));
+    private final Setting<Boolean> setPos = this.register(new Setting<Boolean>("SetPos", true));
+    private final Setting<Boolean> setNull = this.register(new Setting<Boolean>("SetNull", false));
+    private final Setting<Integer> setGroundLimit = this.register(new Setting<Integer>("GroundLimit", 138, 0, 1000));
+    private final Setting<Integer> groundFactor = this.register(new Setting<Integer>("GroundFactor", 13, 0, 50));
+    private final Setting<Integer> step = this.register(new Setting<Object>("SetStep", Integer.valueOf(1), Integer.valueOf(0), Integer.valueOf(2), v -> this.mode.getValue() == Mode.BHOP));
+    private final Setting<Boolean> setGroundNoLag = this.register(new Setting<Boolean>("NoGroundLag", true));
+    private int stage = 1;
+    private double moveSpeed;
+    private double lastDist;
+    private int cooldownHops = 0;
+    private boolean waitForGround = false;
+    private final Timer timer = new Timer();
+    private int hops = 0;
 
     public Speed() {
-        super("Speed", "Makes you faster", Module.Category.MOVEMENT, true, false, false);
-        this.setInstance();
+        super("Speed", "AirControl etc.", Module.Category.MOVEMENT, true, false, false);
+        INSTANCE = this;
     }
 
     public static Speed getInstance() {
@@ -49,516 +63,228 @@ public class Speed
         return INSTANCE;
     }
 
-    private void setInstance() {
-        INSTANCE = this;
+    public static double getBaseMoveSpeed() {
+        double baseSpeed = 0.272;
+        if (Speed.mc.player.isPotionActive(MobEffects.SPEED)) {
+            int amplifier = Objects.requireNonNull(Speed.mc.player.getActivePotionEffect(MobEffects.SPEED)).getAmplifier();
+            baseSpeed *= 1.0 + 0.2 * (double) amplifier;
+        }
+        return baseSpeed;
     }
 
-    private boolean shouldReturn() {
-        return Femhack.moduleManager.isModuleEnabled("Freecam") || Femhack.moduleManager.isModuleEnabled("Phase") || Femhack.moduleManager.isModuleEnabled("ElytraFlight") || Femhack.moduleManager.isModuleEnabled("Strafe") || Femhack.moduleManager.isModuleEnabled("Flight");
+    public static double round(double value, int places) {
+        if (places < 0) {
+            throw new IllegalArgumentException();
+        }
+        BigDecimal bigDecimal = new BigDecimal(value).setScale(places, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 
     @Override
-    public void onUpdate() {
-        if (this.shouldReturn() || Speed.mc.player.isSneaking() || Speed.mc.player.isInWater() || Speed.mc.player.isInLava()) {
-            return;
+    public void onEnable() {
+        if (!Speed.mc.player.onGround) {
+            this.waitForGround = true;
         }
-        switch (this.mode.getValue()) {
-            case BOOST: {
-                this.doBoost();
-                break;
-            }
-            case ACCEL: {
-                this.doAccel();
-                break;
-            }
-            case ONGROUND: {
-                this.doOnground();
-                break;
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
-        if (this.mode.getValue() != Mode.VANILLA || Speed.nullCheck()) {
-            return;
-        }
-        switch (event.getStage()) {
-            case 0: {
-                this.vanillaCounter = this.vanilla() ? ++this.vanillaCounter : 0;
-                if (this.vanillaCounter != 4) break;
-                this.changeY = true;
-                this.minY = Speed.mc.player.getEntityBoundingBox().minY + (Speed.mc.world.getBlockState(Speed.mc.player.getPosition()).getMaterial().blocksMovement() ? -this.blocked.getValue().doubleValue() / 10.0 : this.unblocked.getValue() / 10.0) + this.getJumpBoostModifier();
-                return;
-            }
-            case 1: {
-                if (this.vanillaCounter == 3) {
-                    Speed.mc.player.motionX *= this.zeroSpeed.getValue() / 10.0;
-                    Speed.mc.player.motionZ *= this.zeroSpeed.getValue() / 10.0;
-                    break;
-                }
-                if (this.vanillaCounter != 4) break;
-                Speed.mc.player.motionX /= this.speed.getValue() / 10.0;
-                Speed.mc.player.motionZ /= this.speed.getValue() / 10.0;
-                this.vanillaCounter = 2;
-            }
-        }
-    }
-
-    private double getJumpBoostModifier() {
-        double boost = 0.0;
-        if (Speed.mc.player.isPotionActive(MobEffects.JUMP_BOOST)) {
-            int amplifier = Objects.requireNonNull(Speed.mc.player.getActivePotionEffect(MobEffects.JUMP_BOOST)).getAmplifier();
-            boost *= 1.0 + 0.2 * (double) amplifier;
-        }
-        return boost;
-    }
-
-    private boolean vanillaCheck() {
-        if (Speed.mc.player.onGround) {
-            // empty if block
-        }
-        return false;
-    }
-
-    private boolean vanilla() {
-        return Speed.mc.player.onGround;
-    }
-
-    private void doBoost() {
-        this.bounceHeight = 0.4;
-        this.move = 0.26f;
-        if (Speed.mc.player.onGround) {
-            this.startY = Speed.mc.player.posY;
-        }
-        if (EntityUtil.getEntitySpeed(Speed.mc.player) <= 1.0) {
-            this.lowChainVal = 1.0;
-            this.highChainVal = 1.0;
-        }
-        if (EntityUtil.isEntityMoving(Speed.mc.player) && !Speed.mc.player.collidedHorizontally && !BlockUtil.isBlockAboveEntitySolid(Speed.mc.player) && BlockUtil.isBlockBelowEntitySolid(Speed.mc.player)) {
-            this.oneTime = true;
-            this.antiShake = this.noShake.getValue() != false && Speed.mc.player.getRidingEntity() == null;
-            Random random = new Random();
-            boolean rnd = random.nextBoolean();
-            if (Speed.mc.player.posY >= this.startY + this.bounceHeight) {
-                Speed.mc.player.motionY = -this.bounceHeight;
-                this.lowChainVal += 1.0;
-                if (this.lowChainVal == 1.0) {
-                    this.move = 0.075f;
-                }
-                if (this.lowChainVal == 2.0) {
-                    this.move = 0.15f;
-                }
-                if (this.lowChainVal == 3.0) {
-                    this.move = 0.175f;
-                }
-                if (this.lowChainVal == 4.0) {
-                    this.move = 0.2f;
-                }
-                if (this.lowChainVal == 5.0) {
-                    this.move = 0.225f;
-                }
-                if (this.lowChainVal == 6.0) {
-                    this.move = 0.25f;
-                }
-                if (this.lowChainVal >= 7.0) {
-                    this.move = 0.27895f;
-                }
-            }
-            if (Speed.mc.player.posY == this.startY) {
-                Speed.mc.player.motionY = this.bounceHeight;
-                this.highChainVal += 1.0;
-                if (this.highChainVal == 1.0) {
-                    this.move = 0.075f;
-                }
-                if (this.highChainVal == 2.0) {
-                    this.move = 0.175f;
-                }
-                if (this.highChainVal == 3.0) {
-                    this.move = 0.325f;
-                }
-                if (this.highChainVal == 4.0) {
-                    this.move = 0.375f;
-                }
-                if (this.highChainVal == 5.0) {
-                    this.move = 0.4f;
-                }
-                if (this.highChainVal >= 6.0) {
-                    this.move = 0.43395f;
-                }
-            }
-            EntityUtil.moveEntityStrafe(this.move, Speed.mc.player);
-        } else {
-            if (this.oneTime) {
-                Speed.mc.player.motionY = -0.1;
-                this.oneTime = false;
-            }
-            this.highChainVal = 0.0;
-            this.lowChainVal = 0.0;
-            this.antiShake = false;
-            this.speedOff();
-        }
-    }
-
-    private void doAccel() {
-        this.bounceHeight = 0.4;
-        this.move = 0.26f;
-        if (Speed.mc.player.onGround) {
-            this.startY = Speed.mc.player.posY;
-        }
-        if (EntityUtil.getEntitySpeed(Speed.mc.player) <= 1.0) {
-            this.lowChainVal = 1.0;
-            this.highChainVal = 1.0;
-        }
-        if (EntityUtil.isEntityMoving(Speed.mc.player) && !Speed.mc.player.collidedHorizontally && !BlockUtil.isBlockAboveEntitySolid(Speed.mc.player) && BlockUtil.isBlockBelowEntitySolid(Speed.mc.player)) {
-            this.oneTime = true;
-            this.antiShake = this.noShake.getValue() != false && Speed.mc.player.getRidingEntity() == null;
-            Random random = new Random();
-            boolean rnd = random.nextBoolean();
-            if (Speed.mc.player.posY >= this.startY + this.bounceHeight) {
-                Speed.mc.player.motionY = -this.bounceHeight;
-                this.lowChainVal += 1.0;
-                if (this.lowChainVal == 1.0) {
-                    this.move = 0.075f;
-                }
-                if (this.lowChainVal == 2.0) {
-                    this.move = 0.175f;
-                }
-                if (this.lowChainVal == 3.0) {
-                    this.move = 0.275f;
-                }
-                if (this.lowChainVal == 4.0) {
-                    this.move = 0.35f;
-                }
-                if (this.lowChainVal == 5.0) {
-                    this.move = 0.375f;
-                }
-                if (this.lowChainVal == 6.0) {
-                    this.move = 0.4f;
-                }
-                if (this.lowChainVal == 7.0) {
-                    this.move = 0.425f;
-                }
-                if (this.lowChainVal == 8.0) {
-                    this.move = 0.45f;
-                }
-                if (this.lowChainVal == 9.0) {
-                    this.move = 0.475f;
-                }
-                if (this.lowChainVal == 10.0) {
-                    this.move = 0.5f;
-                }
-                if (this.lowChainVal == 11.0) {
-                    this.move = 0.5f;
-                }
-                if (this.lowChainVal == 12.0) {
-                    this.move = 0.525f;
-                }
-                if (this.lowChainVal == 13.0) {
-                    this.move = 0.525f;
-                }
-                if (this.lowChainVal == 14.0) {
-                    this.move = 0.535f;
-                }
-                if (this.lowChainVal == 15.0) {
-                    this.move = 0.535f;
-                }
-                if (this.lowChainVal == 16.0) {
-                    this.move = 0.545f;
-                }
-                if (this.lowChainVal >= 17.0) {
-                    this.move = 0.545f;
-                }
-            }
-            if (Speed.mc.player.posY == this.startY) {
-                Speed.mc.player.motionY = this.bounceHeight;
-                this.highChainVal += 1.0;
-                if (this.highChainVal == 1.0) {
-                    this.move = 0.075f;
-                }
-                if (this.highChainVal == 2.0) {
-                    this.move = 0.175f;
-                }
-                if (this.highChainVal == 3.0) {
-                    this.move = 0.375f;
-                }
-                if (this.highChainVal == 4.0) {
-                    this.move = 0.6f;
-                }
-                if (this.highChainVal == 5.0) {
-                    this.move = 0.775f;
-                }
-                if (this.highChainVal == 6.0) {
-                    this.move = 0.825f;
-                }
-                if (this.highChainVal == 7.0) {
-                    this.move = 0.875f;
-                }
-                if (this.highChainVal == 8.0) {
-                    this.move = 0.925f;
-                }
-                if (this.highChainVal == 9.0) {
-                    this.move = 0.975f;
-                }
-                if (this.highChainVal == 10.0) {
-                    this.move = 1.05f;
-                }
-                if (this.highChainVal == 11.0) {
-                    this.move = 1.1f;
-                }
-                if (this.highChainVal == 12.0) {
-                    this.move = 1.1f;
-                }
-                if (this.highChainVal == 13.0) {
-                    this.move = 1.15f;
-                }
-                if (this.highChainVal == 14.0) {
-                    this.move = 1.15f;
-                }
-                if (this.highChainVal == 15.0) {
-                    this.move = 1.175f;
-                }
-                if (this.highChainVal == 16.0) {
-                    this.move = 1.175f;
-                }
-                if (this.highChainVal >= 17.0) {
-                    this.move = 1.175f;
-                }
-            }
-            EntityUtil.moveEntityStrafe(this.move, Speed.mc.player);
-        } else {
-            if (this.oneTime) {
-                Speed.mc.player.motionY = -0.1;
-                this.oneTime = false;
-            }
-            this.antiShake = false;
-            this.highChainVal = 0.0;
-            this.lowChainVal = 0.0;
-            this.speedOff();
-        }
-    }
-
-    private void doOnground() {
-        this.bounceHeight = 0.4;
-        this.move = 0.26f;
-        if (Speed.mc.player.onGround) {
-            this.startY = Speed.mc.player.posY;
-        }
-        if (EntityUtil.getEntitySpeed(Speed.mc.player) <= 1.0) {
-            this.lowChainVal = 1.0;
-            this.highChainVal = 1.0;
-        }
-        if (EntityUtil.isEntityMoving(Speed.mc.player) && !Speed.mc.player.collidedHorizontally && !BlockUtil.isBlockAboveEntitySolid(Speed.mc.player) && BlockUtil.isBlockBelowEntitySolid(Speed.mc.player)) {
-            this.oneTime = true;
-            this.antiShake = this.noShake.getValue() != false && Speed.mc.player.getRidingEntity() == null;
-            Random random = new Random();
-            boolean rnd = random.nextBoolean();
-            if (Speed.mc.player.posY >= this.startY + this.bounceHeight) {
-                Speed.mc.player.motionY = -this.bounceHeight;
-                this.lowChainVal += 1.0;
-                if (this.lowChainVal == 1.0) {
-                    this.move = 0.075f;
-                }
-                if (this.lowChainVal == 2.0) {
-                    this.move = 0.175f;
-                }
-                if (this.lowChainVal == 3.0) {
-                    this.move = 0.275f;
-                }
-                if (this.lowChainVal == 4.0) {
-                    this.move = 0.35f;
-                }
-                if (this.lowChainVal == 5.0) {
-                    this.move = 0.375f;
-                }
-                if (this.lowChainVal == 6.0) {
-                    this.move = 0.4f;
-                }
-                if (this.lowChainVal == 7.0) {
-                    this.move = 0.425f;
-                }
-                if (this.lowChainVal == 8.0) {
-                    this.move = 0.45f;
-                }
-                if (this.lowChainVal == 9.0) {
-                    this.move = 0.475f;
-                }
-                if (this.lowChainVal == 10.0) {
-                    this.move = 0.5f;
-                }
-                if (this.lowChainVal == 11.0) {
-                    this.move = 0.5f;
-                }
-                if (this.lowChainVal == 12.0) {
-                    this.move = 0.525f;
-                }
-                if (this.lowChainVal == 13.0) {
-                    this.move = 0.525f;
-                }
-                if (this.lowChainVal == 14.0) {
-                    this.move = 0.535f;
-                }
-                if (this.lowChainVal == 15.0) {
-                    this.move = 0.535f;
-                }
-                if (this.lowChainVal == 16.0) {
-                    this.move = 0.545f;
-                }
-                if (this.lowChainVal >= 17.0) {
-                    this.move = 0.545f;
-                }
-            }
-            if (Speed.mc.player.posY == this.startY) {
-                Speed.mc.player.motionY = this.bounceHeight;
-                this.highChainVal += 1.0;
-                if (this.highChainVal == 1.0) {
-                    this.move = 0.075f;
-                }
-                if (this.highChainVal == 2.0) {
-                    this.move = 0.175f;
-                }
-                if (this.highChainVal == 3.0) {
-                    this.move = 0.375f;
-                }
-                if (this.highChainVal == 4.0) {
-                    this.move = 0.6f;
-                }
-                if (this.highChainVal == 5.0) {
-                    this.move = 0.775f;
-                }
-                if (this.highChainVal == 6.0) {
-                    this.move = 0.825f;
-                }
-                if (this.highChainVal == 7.0) {
-                    this.move = 0.875f;
-                }
-                if (this.highChainVal == 8.0) {
-                    this.move = 0.925f;
-                }
-                if (this.highChainVal == 9.0) {
-                    this.move = 0.975f;
-                }
-                if (this.highChainVal == 10.0) {
-                    this.move = 1.05f;
-                }
-                if (this.highChainVal == 11.0) {
-                    this.move = 1.1f;
-                }
-                if (this.highChainVal == 12.0) {
-                    this.move = 1.1f;
-                }
-                if (this.highChainVal == 13.0) {
-                    this.move = 1.15f;
-                }
-                if (this.highChainVal == 14.0) {
-                    this.move = 1.15f;
-                }
-                if (this.highChainVal == 15.0) {
-                    this.move = 1.175f;
-                }
-                if (this.highChainVal == 16.0) {
-                    this.move = 1.175f;
-                }
-                if (this.highChainVal >= 17.0) {
-                    this.move = 1.2f;
-                }
-            }
-            EntityUtil.moveEntityStrafe(this.move, Speed.mc.player);
-        } else {
-            if (this.oneTime) {
-                Speed.mc.player.motionY = -0.1;
-                this.oneTime = false;
-            }
-            this.antiShake = false;
-            this.highChainVal = 0.0;
-            this.lowChainVal = 0.0;
-            this.speedOff();
-        }
+        this.hops = 0;
+        this.timer.reset();
+        this.moveSpeed = Speed.getBaseMoveSpeed();
     }
 
     @Override
     public void onDisable() {
-        if (this.mode.getValue() == Mode.ONGROUND || this.mode.getValue() == Mode.BOOST) {
-            Speed.mc.player.motionY = -0.1;
-        }
-        this.changeY = false;
-        this.highChainVal = 0.0;
-        this.lowChainVal = 0.0;
-        this.antiShake = false;
+        this.hops = 0;
+        this.moveSpeed = 0.0;
+        this.stage = this.startStage.getValue();
     }
 
     @SubscribeEvent
-    public void onSettingChange(ClientEvent event) {
-        if (event.getStage() == 2 && event.getSetting().equals(this.mode) && this.mode.getPlannedValue() == Mode.INSTANT) {
-            Speed.mc.player.motionY = -0.1;
+    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
+        if (event.getStage() == 0) {
+            this.lastDist = Math.sqrt((Speed.mc.player.posX - Speed.mc.player.prevPosX) * (Speed.mc.player.posX - Speed.mc.player.prevPosX) + (Speed.mc.player.posZ - Speed.mc.player.prevPosZ) * (Speed.mc.player.posZ - Speed.mc.player.prevPosZ));
+        }
+    }
+
+    @SubscribeEvent
+    public void onMove(MoveEvent event) {
+        if (event.getStage() != 0 || this.shouldReturn()) {
+            return;
+        }
+        if (!Speed.mc.player.onGround) {
+            if (this.wait.getValue().booleanValue() && this.waitForGround) {
+                return;
+            }
+        } else {
+            this.waitForGround = false;
+        }
+        if (this.mode.getValue() == Mode.NCP) {
+            this.doNCP(event);
+        } else if (this.mode.getValue() == Mode.BHOP) {
+            float moveForward = Speed.mc.player.movementInput.moveForward;
+            float moveStrafe = Speed.mc.player.movementInput.moveStrafe;
+            float rotationYaw = Speed.mc.player.rotationYaw;
+            if (this.step.getValue() == 1) {
+                Speed.mc.player.stepHeight = 0.6f;
+            }
+            if (this.limiter2.getValue().booleanValue() && Speed.mc.player.onGround && Femhack.speedManager.getSpeedKpH() < (double) this.speedLimit2.getValue().floatValue()) {
+                this.stage = 2;
+            }
+            if (this.limiter.getValue().booleanValue() && Speed.round(Speed.mc.player.posY - (double) ((int) Speed.mc.player.posY), 3) == Speed.round((double) this.setGroundLimit.getValue().intValue() / 1000.0, 3) && (!this.setGroundNoLag.getValue().booleanValue() || EntityUtil.isEntityMoving(Speed.mc.player))) {
+                if (this.setNull.getValue().booleanValue()) {
+                    Speed.mc.player.motionY = 0.0;
+                } else {
+                    Speed.mc.player.motionY -= (double) this.groundFactor.getValue().intValue() / 100.0;
+                    event.setY(event.getY() - (double) this.groundFactor.getValue().intValue() / 100.0);
+                    if (this.setPos.getValue().booleanValue()) {
+                        Speed.mc.player.posY -= (double) this.groundFactor.getValue().intValue() / 100.0;
+                    }
+                }
+            }
+            if (this.stage == 1 && EntityUtil.isMoving()) {
+                this.stage = 2;
+                this.moveSpeed = (double) this.getMultiplier() * Speed.getBaseMoveSpeed() - 0.01;
+            } else if (this.stage == 2 && EntityUtil.isMoving()) {
+                this.stage = 3;
+                Speed.mc.player.motionY = (double) this.yOffset.getValue().intValue() / 1000.0;
+                event.setY((double) this.yOffset.getValue().intValue() / 1000.0);
+                if (this.cooldownHops > 0) {
+                    --this.cooldownHops;
+                }
+                ++this.hops;
+                double accel = this.acceleration.getValue() == 2149 ? 2.149802 : (double) this.acceleration.getValue().intValue() / 1000.0;
+                this.moveSpeed *= accel;
+            } else if (this.stage == 3) {
+                this.stage = 4;
+                double difference = 0.66 * (this.lastDist - Speed.getBaseMoveSpeed());
+                this.moveSpeed = this.lastDist - difference;
+            } else {
+                if (Speed.mc.world.getCollisionBoxes(Speed.mc.player, Speed.mc.player.getEntityBoundingBox().offset(0.0, Speed.mc.player.motionY, 0.0)).size() > 0 || Speed.mc.player.collidedVertically && this.stage > 0) {
+                    this.stage = this.bhop2.getValue() != false && Femhack.speedManager.getSpeedKpH() >= (double) this.speedLimit.getValue().floatValue() ? 0 : (Speed.mc.player.moveForward != 0.0f || Speed.mc.player.moveStrafing != 0.0f ? 1 : 0);
+                }
+                this.moveSpeed = this.lastDist - this.lastDist / (double) this.dFactor.getValue().intValue();
+            }
+            this.moveSpeed = Math.max(this.moveSpeed, Speed.getBaseMoveSpeed());
+            if (this.hopWait.getValue().booleanValue() && this.limiter2.getValue().booleanValue() && this.hops < 2) {
+                this.moveSpeed = EntityUtil.getMaxSpeed();
+            }
+            if (moveForward == 0.0f && moveStrafe == 0.0f) {
+                event.setX(0.0);
+                event.setZ(0.0);
+                this.moveSpeed = 0.0;
+            } else if (moveForward != 0.0f) {
+                if (moveStrafe >= 1.0f) {
+                    rotationYaw += moveForward > 0.0f ? -45.0f : 45.0f;
+                    moveStrafe = 0.0f;
+                } else if (moveStrafe <= -1.0f) {
+                    rotationYaw += moveForward > 0.0f ? 45.0f : -45.0f;
+                    moveStrafe = 0.0f;
+                }
+                if (moveForward > 0.0f) {
+                    moveForward = 1.0f;
+                } else if (moveForward < 0.0f) {
+                    moveForward = -1.0f;
+                }
+            }
+            double motionX = Math.cos(Math.toRadians(rotationYaw + 90.0f));
+            double motionZ = Math.sin(Math.toRadians(rotationYaw + 90.0f));
+            if (this.cooldownHops == 0) {
+                event.setX((double) moveForward * this.moveSpeed * motionX + (double) moveStrafe * this.moveSpeed * motionZ);
+                event.setZ((double) moveForward * this.moveSpeed * motionZ - (double) moveStrafe * this.moveSpeed * motionX);
+            }
+            if (this.step.getValue() == 2) {
+                Speed.mc.player.stepHeight = 0.6f;
+            }
+            if (moveForward == 0.0f && moveStrafe == 0.0f) {
+                this.timer.reset();
+                event.setX(0.0);
+                event.setZ(0.0);
+            }
+        }
+    }
+
+    private void doNCP(MoveEvent event) {
+        if (!this.limiter.getValue().booleanValue() && Speed.mc.player.onGround) {
+            this.stage = 2;
+        }
+        switch (this.stage) {
+            case 0: {
+                ++this.stage;
+                this.lastDist = 0.0;
+                break;
+            }
+            case 2: {
+                double motionY = 0.40123128;
+                if (Speed.mc.player.moveForward == 0.0f && Speed.mc.player.moveStrafing == 0.0f || !Speed.mc.player.onGround)
+                    break;
+                if (Speed.mc.player.isPotionActive(MobEffects.JUMP_BOOST)) {
+                    motionY += (float) (Speed.mc.player.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.1f;
+                }
+                Speed.mc.player.motionY = motionY;
+                event.setY(Speed.mc.player.motionY);
+                this.moveSpeed *= 2.149;
+                break;
+            }
+            case 3: {
+                this.moveSpeed = this.lastDist - 0.76 * (this.lastDist - Speed.getBaseMoveSpeed());
+                break;
+            }
+            default: {
+                if (Speed.mc.world.getCollisionBoxes(Speed.mc.player, Speed.mc.player.getEntityBoundingBox().offset(0.0, Speed.mc.player.motionY, 0.0)).size() > 0 || Speed.mc.player.collidedVertically && this.stage > 0) {
+                    this.stage = this.bhop2.getValue() != false && Femhack.speedManager.getSpeedKpH() >= (double) this.speedLimit.getValue().floatValue() ? 0 : (Speed.mc.player.moveForward != 0.0f || Speed.mc.player.moveStrafing != 0.0f ? 1 : 0);
+                }
+                this.moveSpeed = this.lastDist - this.lastDist / 159.0;
+            }
+        }
+        this.moveSpeed = Math.max(this.moveSpeed, Speed.getBaseMoveSpeed());
+        double forward = Speed.mc.player.movementInput.moveForward;
+        double strafe = Speed.mc.player.movementInput.moveStrafe;
+        double yaw = Speed.mc.player.rotationYaw;
+        if (forward == 0.0 && strafe == 0.0) {
+            event.setX(0.0);
+            event.setZ(0.0);
+        } else if (forward != 0.0 && strafe != 0.0) {
+            forward *= Math.sin(0.7853981633974483);
+            strafe *= Math.cos(0.7853981633974483);
+        }
+        event.setX((forward * this.moveSpeed * -Math.sin(Math.toRadians(yaw)) + strafe * this.moveSpeed * Math.cos(Math.toRadians(yaw))) * 0.99);
+        event.setZ((forward * this.moveSpeed * Math.cos(Math.toRadians(yaw)) - strafe * this.moveSpeed * -Math.sin(Math.toRadians(yaw))) * 0.99);
+        ++this.stage;
+    }
+
+    private float getMultiplier() {
+        float baseSpeed = this.specialMoveSpeed.getValue().intValue();
+        if (this.potion.getValue().booleanValue() && Speed.mc.player.isPotionActive(MobEffects.SPEED)) {
+            int amplifier = Objects.requireNonNull(Speed.mc.player.getActivePotionEffect(MobEffects.SPEED)).getAmplifier() + 1;
+            baseSpeed = amplifier >= 2 ? (float) this.potionSpeed2.getValue().intValue() : (float) this.potionSpeed.getValue().intValue();
+        }
+        return baseSpeed / 100.0f;
+    }
+
+    private boolean shouldReturn() {
+        return Femhack.moduleManager.isModuleEnabled(String.valueOf(Freecam.class));
+    }
+
+    @SubscribeEvent
+    public void onPacketReceive(PacketEvent.Receive event) {
+        if (event.getPacket() instanceof SPacketPlayerPosLook && this.noLag.getValue().booleanValue()) {
+            this.stage = this.mode.getValue() == Mode.BHOP && (this.limiter2.getValue() != false || this.bhop2.getValue() != false) ? 1 : 4;
         }
     }
 
     @Override
     public String getDisplayInfo() {
-        return this.mode.currentEnumName();
-    }
-
-    @SubscribeEvent
-    public void onMode(MoveEvent event) {
-        if (!(this.shouldReturn() || event.getStage() != 0 || this.mode.getValue() != Mode.INSTANT || Speed.nullCheck() || Speed.mc.player.isSneaking() || Speed.mc.player.isInWater() || Speed.mc.player.isInLava() || Speed.mc.player.movementInput.moveForward == 0.0f && Speed.mc.player.movementInput.moveStrafe == 0.0f)) {
-            if (Speed.mc.player.onGround && this.strafeJump.getValue().booleanValue()) {
-                Speed.mc.player.motionY = 0.4;
-                event.setY(0.4);
+        if (this.mode.getValue() != Mode.NONE) {
+            if (this.mode.getValue() == Mode.NCP) {
+                return this.mode.currentEnumName().toUpperCase();
             }
-            MovementInput movementInput = Speed.mc.player.movementInput;
-            float moveForward = movementInput.moveForward;
-            float moveStrafe = movementInput.moveStrafe;
-            float rotationYaw = Speed.mc.player.rotationYaw;
-            if ((double) moveForward == 0.0 && (double) moveStrafe == 0.0) {
-                event.setX(0.0);
-                event.setZ(0.0);
-            } else {
-                if ((double) moveForward != 0.0) {
-                    if ((double) moveStrafe > 0.0) {
-                        rotationYaw += (float) ((double) moveForward > 0.0 ? -45 : 45);
-                    } else if ((double) moveStrafe < 0.0) {
-                        rotationYaw += (float) ((double) moveForward > 0.0 ? 45 : -45);
-                    }
-                    moveStrafe = 0.0f;
-                    float f = moveForward == 0.0f ? moveForward : (moveForward = (double) moveForward > 0.0 ? 1.0f : -1.0f);
-                }
-                moveStrafe = moveStrafe == 0.0f ? moveStrafe : ((double) moveStrafe > 0.0 ? 1.0f : -1.0f);
-                event.setX((double) moveForward * EntityUtil.getMaxSpeed() * Math.cos(Math.toRadians(rotationYaw + 90.0f)) + (double) moveStrafe * EntityUtil.getMaxSpeed() * Math.sin(Math.toRadians(rotationYaw + 90.0f)));
-                event.setZ((double) moveForward * EntityUtil.getMaxSpeed() * Math.sin(Math.toRadians(rotationYaw + 90.0f)) - (double) moveStrafe * EntityUtil.getMaxSpeed() * Math.cos(Math.toRadians(rotationYaw + 90.0f)));
-            }
+            return this.mode.currentEnumName();
         }
-    }
-
-    private void speedOff() {
-        float yaw = (float) Math.toRadians(Speed.mc.player.rotationYaw);
-        if (BlockUtil.isBlockAboveEntitySolid(Speed.mc.player)) {
-            if (Speed.mc.gameSettings.keyBindForward.isKeyDown() && !Speed.mc.gameSettings.keyBindSneak.isKeyDown() && Speed.mc.player.onGround) {
-                Speed.mc.player.motionX -= (double) MathUtil.sin(yaw) * 0.15;
-                Speed.mc.player.motionZ += (double) MathUtil.cos(yaw) * 0.15;
-            }
-        } else if (Speed.mc.player.collidedHorizontally) {
-            if (Speed.mc.gameSettings.keyBindForward.isKeyDown() && !Speed.mc.gameSettings.keyBindSneak.isKeyDown() && Speed.mc.player.onGround) {
-                Speed.mc.player.motionX -= (double) MathUtil.sin(yaw) * 0.03;
-                Speed.mc.player.motionZ += (double) MathUtil.cos(yaw) * 0.03;
-            }
-        } else if (!BlockUtil.isBlockBelowEntitySolid(Speed.mc.player)) {
-            if (Speed.mc.gameSettings.keyBindForward.isKeyDown() && !Speed.mc.gameSettings.keyBindSneak.isKeyDown() && Speed.mc.player.onGround) {
-                Speed.mc.player.motionX -= (double) MathUtil.sin(yaw) * 0.03;
-                Speed.mc.player.motionZ += (double) MathUtil.cos(yaw) * 0.03;
-            }
-        } else {
-            Speed.mc.player.motionX = 0.0;
-            Speed.mc.player.motionZ = 0.0;
-        }
+        return null;
     }
 
     public enum Mode {
-        INSTANT,
-        ONGROUND,
-        ACCEL,
-        BOOST,
-        VANILLA
+        NONE,
+        NCP,
+        BHOP
 
     }
 }
