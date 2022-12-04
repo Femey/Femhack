@@ -64,7 +64,6 @@ public class FemboyESP extends Module
             return null;
         }
     }
-
     @Override
     public void onUpdate() {
         if (this.reload.getValue()) {
