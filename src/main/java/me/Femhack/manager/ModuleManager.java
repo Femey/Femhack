@@ -73,8 +73,11 @@ public class ModuleManager
         this.modules.add(new AutoWeb());
         this.modules.add(new AutoCrystal());
         this.modules.add(new Killaura());
+        this.modules.add(new AutoRickRoll());
+        this.modules.add(new Anchor());
         this.modules.add(new Criticals());
         this.modules.add(new HoleFiller());
+        this.modules.add(new PumpkinAura());
         this.modules.add(new AutoArmor());
         this.modules.add(new Speed());
         this.modules.add(new AssESP());

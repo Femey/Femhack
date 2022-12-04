@@ -11,6 +11,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.*;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
+import net.minecraft.util.EnumHand;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,6 +79,18 @@ public class InventoryUtil
             return i;
         }
         return -1;
+    }
+
+    public static EnumHand getHandHolding(Item item) {
+        if (mc.player.getHeldItemMainhand().getItem() == item) {
+            return EnumHand.MAIN_HAND;
+        }
+
+        else if (mc.player.getHeldItemOffhand().getItem() == item) {
+            return EnumHand.OFF_HAND;
+        }
+
+        return null;
     }
 
     public static int findStackInventory(Item input) {
