@@ -2,6 +2,7 @@ package me.Femhack.util;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
+import me.Femhack.mixin.mixins.accessors.IEntityLivingBase;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -10,6 +11,7 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityIronGolem;
@@ -34,6 +36,7 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.Packet;
 
 import java.awt.*;
 import java.math.RoundingMode;
@@ -49,6 +52,8 @@ public class EntityUtil
     public static final Vec3d[] OffsetList = new Vec3d[]{new Vec3d(1.0, 1.0, 0.0), new Vec3d(-1.0, 1.0, 0.0), new Vec3d(0.0, 1.0, 1.0), new Vec3d(0.0, 1.0, -1.0), new Vec3d(0.0, 2.0, 0.0)};
     public static final Vec3d[] antiStepOffsetList = new Vec3d[]{new Vec3d(-1.0, 2.0, 0.0), new Vec3d(1.0, 2.0, 0.0), new Vec3d(0.0, 2.0, 1.0), new Vec3d(0.0, 2.0, -1.0)};
     public static final Vec3d[] antiScaffoldOffsetList = new Vec3d[]{new Vec3d(0.0, 3.0, 0.0)};
+    public static final Vec3d[] doubleLegOffsetList = new Vec3d[]{new Vec3d(-1.0, 0.0, 0.0), new Vec3d(1.0, 0.0, 0.0), new Vec3d(0.0, 0.0, -1.0), new Vec3d(0.0, 0.0, 1.0), new Vec3d(-2.0, 0.0, 0.0), new Vec3d(2.0, 0.0, 0.0), new Vec3d(0.0, 0.0, -2.0), new Vec3d(0.0, 0.0, 2.0)};
+
 
     public static void attackEntity(Entity entity, boolean packet, boolean swingArm) {
         if (packet) {
@@ -110,6 +115,29 @@ public class EntityUtil
         return false;
     }
 
+    public static void swingArmNoPacket(final EnumHand hand, final EntityLivingBase entity) {
+        final ItemStack stack = entity.getHeldItem(hand);
+        if (!stack.isEmpty() && stack.getItem().onEntitySwing(entity, stack)) {
+            return;
+        }
+        if (!entity.isSwingInProgress || entity.swingProgressInt >= ((IEntityLivingBase) entity).getArmSwingAnimationEnd() / 2 || entity.swingProgressInt < 0) {
+            entity.swingProgressInt = -1;
+            entity.isSwingInProgress = true;
+            entity.swingingHand = hand;
+        }
+    }
+
+    public static void OffhandAttack(Entity entity, boolean packet, boolean swingArm) {
+        if (packet) {
+            EntityUtil.mc.player.connection.sendPacket((Packet)new CPacketUseEntity(entity));
+        } else {
+            EntityUtil.mc.playerController.attackEntity((EntityPlayer)EntityUtil.mc.player, entity);
+        }
+        if (swingArm) {
+            EntityUtil.mc.player.swingArm(EnumHand.OFF_HAND);
+        }
+    }
+
     public static boolean isSafe(Entity entity) {
         return EntityUtil.isSafe(entity, 0, false);
     }
@@ -136,6 +164,23 @@ public class EntityUtil
             }
         }
         return EntityUtil.isHostileMob(entity);
+    }
+
+    public static boolean isCrystalAtFeet(final EntityEnderCrystal crystal, final double range) {
+        for (final EntityPlayer player : mc.world.playerEntities) {
+            if (mc.player.getDistanceSq(player) > range * range) {
+                continue;
+            }
+            if (Femhack.friendManager.isFriend(player)) {
+                continue;
+            }
+            for (final Vec3d vec : EntityUtil.doubleLegOffsetList) {
+                if (new BlockPos(player.getPositionVector()).add(vec.x, vec.y, vec.z) == crystal.getPosition()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean isNeutralMob(Entity entity) {

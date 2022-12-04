@@ -17,6 +17,7 @@ public class CommandManager
     public CommandManager() {
         super("Command");
         this.commands.add(new BindCommand());
+        this.commands.add(new FakeplayerCommand());
         this.commands.add(new ModuleCommand());
         this.commands.add(new PrefixCommand());
         this.commands.add(new ConfigCommand());

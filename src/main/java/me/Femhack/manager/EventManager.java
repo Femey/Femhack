@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
 import me.Femhack.event.events.*;
+import me.Femhack.features.modules.combat.AutoCrystal;
 import me.Femhack.util.Timer;
 import me.Femhack.features.Feature;
 import me.Femhack.features.command.Command;
@@ -28,6 +29,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class EventManager extends Feature {
     private final Timer logoutTimer = new Timer();
@@ -39,6 +41,7 @@ public class EventManager extends Feature {
     public void onUnload() {
         MinecraftForge.EVENT_BUS.unregister(this);
     }
+    private final AtomicBoolean tickOngoing = new AtomicBoolean(false);
 
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingUpdateEvent event) {
@@ -62,6 +65,10 @@ public class EventManager extends Feature {
     @SubscribeEvent
     public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
         Femhack.moduleManager.onLogout();
+    }
+
+    public boolean ticksOngoing() {
+        return this.tickOngoing.get();
     }
 
     @SubscribeEvent

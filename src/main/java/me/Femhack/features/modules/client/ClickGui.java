@@ -17,13 +17,13 @@ public class ClickGui
     public Setting<String> prefix = this.register(new Setting<String>("Prefix", "."));
     public Setting<Boolean> customFov = this.register(new Setting<Boolean>("CustomFov", false));
     public Setting<Float> fov = this.register(new Setting<Float>("Fov", Float.valueOf(150.0f), Float.valueOf(-180.0f), Float.valueOf(180.0f)));
-    public Setting<Integer> red = this.register(new Setting<Integer>("Red", 0, 0, 255));
+    public Setting<Integer> red = this.register(new Setting<Integer>("Red", 255, 0, 255));
     public Setting<Integer> green = this.register(new Setting<Integer>("Green", 0, 0, 255));
     public Setting<Integer> blue = this.register(new Setting<Integer>("Blue", 255, 0, 255));
     public Setting<Integer> hoverAlpha = this.register(new Setting<Integer>("Alpha", 180, 0, 255));
-    public Setting<Integer> topRed = this.register(new Setting<Integer>("SecondRed", 0, 0, 255));
+    public Setting<Integer> topRed = this.register(new Setting<Integer>("SecondRed", 255, 0, 255));
     public Setting<Integer> topGreen = this.register(new Setting<Integer>("SecondGreen", 0, 0, 255));
-    public Setting<Integer> topBlue = this.register(new Setting<Integer>("SecondBlue", 150, 0, 255));
+    public Setting<Integer> topBlue = this.register(new Setting<Integer>("SecondBlue", 255, 0, 255));
     public Setting<Integer> alpha = this.register(new Setting<Integer>("HoverAlpha", 240, 0, 255));
     public Setting<Boolean> rainbow = this.register(new Setting<Boolean>("Rainbow", false));
     public Setting<rainbowMode> rainbowModeHud = this.register(new Setting<Object>("HRainbowMode", rainbowMode.Static, v -> this.rainbow.getValue()));

@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.*;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -94,6 +95,27 @@ public class DamageUtil
 
     public static float calculateDamage(BlockPos pos, Entity entity) {
         return DamageUtil.calculateDamage((double) pos.getX() + 0.5, pos.getY() + 1, (double) pos.getZ() + 0.5, entity);
+    }
+
+    public static boolean canBreakWeakness(EntityPlayer player) {
+        int strengthAmp = 0;
+        PotionEffect effect = DamageUtil.mc.player.getActivePotionEffect(MobEffects.STRENGTH);
+        if (effect != null) {
+            strengthAmp = effect.getAmplifier();
+        }
+        return !DamageUtil.mc.player.isPotionActive(MobEffects.WEAKNESS) || strengthAmp >= 1 || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemSword || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemPickaxe || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemAxe || DamageUtil.mc.player.getHeldItemMainhand().getItem() instanceof ItemSpade;
+    }
+
+    public static boolean isNaked(EntityPlayer player) {
+        for (ItemStack piece : player.inventory.armorInventory) {
+            if (piece == null || piece.isEmpty()) continue;
+            return false;
+        }
+        return true;
+    }
+
+    public static float calculateDamage(Entity crystal, Entity entity) {
+        return DamageUtil.calculateDamage(crystal.posX, crystal.posY, crystal.posZ, entity);
     }
 
     public static int getCooldownByWeapon(EntityPlayer player) {
