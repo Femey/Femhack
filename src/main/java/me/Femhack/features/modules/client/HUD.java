@@ -43,8 +43,8 @@ public class HUD extends Module {
     private final me.Femhack.util.Timer timer = new Timer();
     private final Map<String, Integer> players = new HashMap<>();
     public Setting<String> command = register(new Setting("Command", "Femhack"));
-    public Setting<TextUtil.Color> bracketColor = register(new Setting("BracketColor", TextUtil.Color.BLUE));
-    public Setting<TextUtil.Color> commandColor = register(new Setting("NameColor", TextUtil.Color.BLUE));
+    public Setting<TextUtil.Color> bracketColor = register(new Setting("BracketColor", TextUtil.Color.LIGHT_PURPLE));
+    public Setting<TextUtil.Color> commandColor = register(new Setting("NameColor", TextUtil.Color.LIGHT_PURPLE));
     public Setting<String> commandBracket = register(new Setting("Bracket", "<"));
     public Setting<String> commandBracket2 = register(new Setting("Bracket2", ">"));
     public Setting<Boolean> notifyToggles = register(new Setting("ChatNotify", Boolean.valueOf(false), "notifys in chat"));
