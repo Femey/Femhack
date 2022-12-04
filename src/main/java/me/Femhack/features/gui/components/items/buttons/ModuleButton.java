@@ -74,7 +74,7 @@ public class ModuleButton
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (!this.items.isEmpty()) {
-            if (HUD.getInstance().magenDavid.getValue().booleanValue()) {
+            if (HUD.getInstance().gear.getValue().booleanValue()) {
                 Util.mc.getTextureManager().bindTexture(this.logo);
                 ModuleButton.drawCompleteImage(this.x - 1.5f + (float) this.width - 7.4f, this.y - 2.2f - (float) FemhackGui.getClickGui().getTextOffset(), 8, 8);
             }

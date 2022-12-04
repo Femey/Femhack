@@ -12,7 +12,7 @@ import org.lwjgl.opengl.Display;
 public class Femhack {
     public static final String MODID = "femhack";
     public static final String MODNAME = "Femhack";
-    public static final String MODVER = "0.0.3";
+    public static final String MODVER = "0.1";
     public static final Logger LOGGER = LogManager.getLogger("Femhack");
     public static CommandManager commandManager;
     public static FriendManager friendManager;
