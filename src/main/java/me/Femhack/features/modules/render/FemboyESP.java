@@ -29,37 +29,35 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class FemboyESP extends Module
-{
+public class FemboyESP extends Module {
     private final Setting<CachedImage> imageUrl;
     private final Setting<Boolean> noRenderPlayers = this.register(new Setting<Boolean>("NoRenderPlayers", false));
     private final Setting<Boolean> reload = this.register(new Setting<Boolean>("ReloadTexture", false));
     private ResourceLocation femboy;
     private ICamera camera;
     public static final EventBus EVENT_BUS = MinecraftForge.EVENT_BUS;
-    
+
     public FemboyESP() {
         super("FemboyEsp", "draws cute femboys on people", Module.Category.RENDER, false, false, false);
         this.imageUrl = this.register(new Setting<CachedImage>("Image", CachedImage.ASTOLFO));
-        this.camera = (ICamera)new Frustum();
+        this.camera = (ICamera) new Frustum();
         this.onLoad();
     }
 
     @Override
     public void onEnable() {
-        FemboyESP.EVENT_BUS.register((Object)this);
+        FemboyESP.EVENT_BUS.register((Object) this);
     }
 
     @Override
     public void onDisable() {
-        FemboyESP.EVENT_BUS.unregister((Object)this);
+        FemboyESP.EVENT_BUS.unregister((Object) this);
     }
-    
+
     private <T> BufferedImage getImage(final T source, final ThrowingFunction<T, BufferedImage> readFunction) {
         try {
             return readFunction.apply(source);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
             return null;
         }
@@ -76,9 +74,9 @@ public class FemboyESP extends Module
 
 
     private boolean shouldDraw(final EntityLivingBase entity) {
-        return !entity.equals((Object) FemboyESP.mc.player) && entity.getHealth() > 0.0f && EntityUtil.isPlayer((Entity)entity);
+        return !entity.equals((Object) FemboyESP.mc.player) && entity.getHealth() > 0.0f && EntityUtil.isPlayer((Entity) entity);
     }
-    
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onRenderGameOverlayEvent(final RenderGameOverlayEvent.Text event) {
         if (this.femboy == null) {
@@ -89,11 +87,11 @@ public class FemboyESP extends Module
         final double d5 = FemboyESP.mc.player.lastTickPosZ + (FemboyESP.mc.player.posZ - FemboyESP.mc.player.lastTickPosZ) * event.getPartialTicks();
         this.camera.setPosition(d3, d4, d5);
         final List<EntityPlayer> players = new ArrayList<EntityPlayer>(FemboyESP.mc.world.playerEntities);
-        players.sort(Comparator.comparing(entityPlayer -> FemboyESP.mc.player.getDistance((Entity)entityPlayer)).reversed());
+        players.sort(Comparator.comparing(entityPlayer -> FemboyESP.mc.player.getDistance((Entity) entityPlayer)).reversed());
         for (final EntityPlayer player : players) {
             if (player != FemboyESP.mc.getRenderViewEntity() && player.isEntityAlive() && this.camera.isBoundingBoxInFrustum(player.getEntityBoundingBox())) {
-                final EntityLivingBase living = (EntityLivingBase)player;
-                final Vec3d bottomVec = EntityUtil.getInterpolatedPos((Entity)living, event.getPartialTicks());
+                final EntityLivingBase living = (EntityLivingBase) player;
+                final Vec3d bottomVec = EntityUtil.getInterpolatedPos((Entity) living, event.getPartialTicks());
                 final Vec3d topVec = bottomVec.add(new Vec3d(0.0, player.getRenderBoundingBox().maxY - player.posY, 0.0));
                 final VectorUtils.ScreenPos top = VectorUtils._toScreen(topVec.x, topVec.y, topVec.z);
                 final VectorUtils.ScreenPos bot = VectorUtils._toScreen(bottomVec.x, bottomVec.y, bottomVec.z);
@@ -102,15 +100,15 @@ public class FemboyESP extends Module
                 }
                 final int height;
                 final int width = height = bot.y - top.y;
-                final int x = (int)(top.x - width / 1.8);
+                final int x = (int) (top.x - width / 1.8);
                 final int y = top.y;
                 FemboyESP.mc.renderEngine.bindTexture(this.femboy);
                 GlStateManager.color(255.0f, 255.0f, 255.0f);
-                Gui.drawScaledCustomSizeModalRect(x, y, 0.0f, 0.0f, width, height, width, height, (float)width, (float)height);
+                Gui.drawScaledCustomSizeModalRect(x, y, 0.0f, 0.0f, width, height, width, height, (float) width, (float) height);
             }
         }
     }
-    
+
     @SubscribeEvent
     public void onRenderPlayer(final RenderPlayerEvent.Pre event) {
         if (this.noRenderPlayers.getValue() && !event.getEntity().equals((Object) FemboyESP.mc.player)) {
@@ -118,7 +116,7 @@ public class FemboyESP extends Module
         }
     }
 
-    
+
     public void onLoad() {
         BufferedImage image = null;
         try {
@@ -127,46 +125,39 @@ public class FemboyESP extends Module
             }
             if (image == null) {
                 Command.sendMessage("Failed to load image");
-            }
-            else {
+            } else {
                 final DynamicTexture dynamicTexture = new DynamicTexture(image);
                 dynamicTexture.loadTexture(FemboyESP.mc.getResourceManager());
-                this.femboy = FemboyESP.mc.getTextureManager().getDynamicTextureLocation("Bucket" + this.imageUrl.getValue().name(), dynamicTexture);
+                this.femboy = FemboyESP.mc.getTextureManager().getDynamicTextureLocation("Femhack" + this.imageUrl.getValue().name(), dynamicTexture);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     private InputStream getFile(final String string) {
         return FemboyESP.class.getResourceAsStream(string);
     }
-    
-    private enum CachedImage
-    {
+
+    private enum CachedImage {
         ASTOLFO("/images/astolfo.png"),
         ASTOLFO2("/images/astolfo2.png"),
         FELIX("/images/felix.png"),
         FEMBOY("/images/femboy.png");
-        
+
         String name;
-        
+
         private CachedImage(final String name) {
             this.name = name;
         }
-        
+
         public String getName() {
             return this.name;
         }
     }
-    
+
     @FunctionalInterface
-    private interface ThrowingFunction<T, R>
-    {
+    private interface ThrowingFunction<T, R> {
         R apply(final T p0) throws IOException;
     }
-
-
-
 }

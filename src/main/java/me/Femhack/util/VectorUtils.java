@@ -3,13 +3,10 @@ package me.Femhack.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
-
-import java.nio.FloatBuffer;
 
 public class VectorUtils
 {
@@ -17,10 +14,6 @@ public class VectorUtils
 
     public static final Minecraft mc = Minecraft.getMinecraft();
     static Matrix4f projectionMatrix;
-    private static final FloatBuffer MODELVIEW = GLAllocation.createDirectFloatBuffer(16);
-    private static final FloatBuffer PROJECTION = GLAllocation.createDirectFloatBuffer(16);
-    private static Vec3d position = new Vec3d(0.0D, 0.0D, 0.0D);
-
 
     private static void VecTransformCoordinate(final Vector4f vec, final Matrix4f matrix) {
         final float x = vec.x;
@@ -37,14 +30,15 @@ public class VectorUtils
         if (view == null) {
             return new Plane(0.0, 0.0, false);
         }
-        final Vec3d camPos = position;
+
+        final Vec3d camPos = ActiveRenderInfo.getCameraPosition();
         final Vec3d eyePos = ActiveRenderInfo.projectViewFromEntity(view, (double)VectorUtils.mc.getRenderPartialTicks());
         final float vecX = (float)(camPos.x + eyePos.x - (float)x);
         final float vecY = (float)(camPos.y + eyePos.y - (float)y);
         final float vecZ = (float)(camPos.z + eyePos.z - (float)z);
         final Vector4f pos = new Vector4f(vecX, vecY, vecZ, 1.0f);
-        VectorUtils.modelMatrix.load(MODELVIEW.asReadOnlyBuffer());
-        VectorUtils.projectionMatrix.load(PROJECTION.asReadOnlyBuffer());
+        VectorUtils.modelMatrix.load(GLUProjection.getInstance().modelview.asReadOnlyBuffer());
+        VectorUtils.projectionMatrix.load(GLUProjection.getInstance().projection.asReadOnlyBuffer());
         VecTransformCoordinate(pos, VectorUtils.modelMatrix);
         VecTransformCoordinate(pos, VectorUtils.projectionMatrix);
         if (pos.w > 0.0f) {
