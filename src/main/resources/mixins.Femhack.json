@@ -9,6 +9,7 @@
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
     "MixinGuiNewChat",
+    "MixinEntityLivingBase",
     "MixinGuiPlayerTabOverlay",
     "MixinGuiScreen",
     "MixinItemRenderer",
