@@ -19,7 +19,7 @@ import java.util.List;
 public class ModuleButton
         extends Button {
     private final Module module;
-    private final ResourceLocation logo = new ResourceLocation("textures/Femhack.png");
+    private final ResourceLocation logo = new ResourceLocation("textures/uwu.png");
     private List<Item> items = new ArrayList<Item>();
     private boolean subOpen;
 
