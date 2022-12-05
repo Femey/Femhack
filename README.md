@@ -12,3 +12,4 @@ Version 0.9 :3
 * Auto Promote
 * Arrow tracers
 * Speed
+* Logout spots
