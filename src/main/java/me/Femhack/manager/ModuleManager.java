@@ -83,7 +83,6 @@ public class ModuleManager
         this.modules.add(new HoleFiller());
         this.modules.add(new PumpkinAura());
         this.modules.add(new AutoArmor());
-        this.modules.add(new Speed());
         this.modules.add(new AssESP());
         this.modules.add(new AutoSex());
         this.modules.add(new AutoSignKick());

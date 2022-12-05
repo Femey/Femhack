@@ -11,3 +11,4 @@ Version 0.9 :3
 * Cool gui particles/dvd screen 
 * Auto Promote
 * Arrow tracers
+* Speed
