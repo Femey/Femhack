@@ -79,6 +79,7 @@ public class ModuleManager
         this.modules.add(new Ambience());
         this.modules.add(new ViewModel());
         this.modules.add(new SlowSwing());
+        this.modules.add(new Speed());
         this.modules.add(new Criticals());
         this.modules.add(new HoleFiller());
         this.modules.add(new PumpkinAura());

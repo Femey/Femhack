@@ -1,4 +1,4 @@
-package me.Femhack.features.modules.movement;
+package me.Femhack.features.modules.player;
 
 import me.Femhack.features.setting.Setting;
 import me.Femhack.event.events.UpdateWalkingPlayerEvent;

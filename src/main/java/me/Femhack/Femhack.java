@@ -18,6 +18,7 @@ public class Femhack {
     public static FriendManager friendManager;
     public static ModuleManager moduleManager;
     public static PacketManager packetManager;
+    public static TimerManager timerManager;
     public static ColorManager colorManager;
     public static HoleManager holeManager;
     public static InventoryManager inventoryManager;
@@ -51,6 +52,7 @@ public class Femhack {
         friendManager = new FriendManager();
         moduleManager = new ModuleManager();
         rotationManager = new RotationManager();
+        timerManager = new TimerManager();
         packetManager = new PacketManager();
         eventManager = new EventManager();
         speedManager = new SpeedManager();
@@ -84,6 +86,7 @@ public class Femhack {
         friendManager = null;
         speedManager = null;
         holeManager = null;
+        timerManager = null;
         positionManager = null;
         rotationManager = null;
         configManager = null;

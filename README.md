@@ -8,8 +8,6 @@ Version 0.9 :3
 
 # Thingys i gotta work on >w<
 
-* Cool gui particles/dvd screen 
-* Auto Promote
+* Cool gui particles/dvd screen
 * Arrow tracers
-* Speed
-* Logout spots
+* CevBreaker

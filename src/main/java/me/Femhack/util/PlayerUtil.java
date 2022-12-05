@@ -9,7 +9,9 @@ import com.mojang.util.UUIDTypeAdapter;
 import me.Femhack.features.command.Command;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import org.apache.commons.io.IOUtils;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -56,6 +58,49 @@ public class PlayerUtil implements Util {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static boolean isMoving(EntityLivingBase entity) {
+        return entity.moveForward != 0.0f || entity.moveStrafing != 0.0f;
+    }
+
+    public static void setSpeed(EntityLivingBase entity, double speed) {
+        double[] dir = PlayerUtil.forward(speed);
+        entity.motionX = dir[0];
+        entity.motionZ = dir[1];
+    }
+
+    public static double[] forward(double speed) {
+        float forward = mc.player.movementInput.moveForward;
+        float side = mc.player.movementInput.moveStrafe;
+        float yaw = mc.player.prevRotationYaw + (mc.player.rotationYaw - mc.player.prevRotationYaw) * mc.getRenderPartialTicks();
+        if (forward != 0.0f) {
+            if (side > 0.0f) {
+                yaw += (float) (forward > 0.0f ? -45 : 45);
+            } else if (side < 0.0f) {
+                yaw += (float) (forward > 0.0f ? 45 : -45);
+            }
+            side = 0.0f;
+            if (forward > 0.0f) {
+                forward = 1.0f;
+            } else if (forward < 0.0f) {
+                forward = -1.0f;
+            }
+        }
+        double sin = Math.sin(Math.toRadians(yaw + 90.0f));
+        double cos = Math.cos(Math.toRadians(yaw + 90.0f));
+        double posX = (double) forward * speed * cos + (double) side * speed * sin;
+        double posZ = (double) forward * speed * sin - (double) side * speed * cos;
+        return new double[]{posX, posZ};
+    }
+
+    public static double getBaseMoveSpeed() {
+        double baseSpeed = 0.2873;
+        if (mc.player != null && mc.player.isPotionActive(Objects.requireNonNull(Potion.getPotionById(1)))) {
+            int amplifier = Objects.requireNonNull(mc.player.getActivePotionEffect(Objects.requireNonNull(Potion.getPotionById(1)))).getAmplifier();
+            baseSpeed *= 1.0 + 0.2 * (double) (amplifier + 1);
+        }
+        return baseSpeed;
     }
 
     public static String requestIDs(String data) {
