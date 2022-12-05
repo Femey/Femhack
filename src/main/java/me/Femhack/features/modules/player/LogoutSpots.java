@@ -35,14 +35,13 @@ class LogoutSpots
     private final Setting < Boolean > smartScale = this.register ( new Setting < Object > ( "SmartScale" , Boolean.FALSE , v -> this.scaleing.getValue ( ) ) );
     private final Setting < Boolean > rect = this.register ( new Setting <> ( "Rectangle" , true ) );
     private final Setting < Boolean > coords = this.register ( new Setting <> ( "Coords" , true ) );
-    private final Setting < Boolean > notification = this.register ( new Setting <> ( "Notification" , true ) );
     private final List < LogoutPos > spots = new CopyOnWriteArrayList <> ( );
     public Setting < Float > range = this.register ( new Setting <> ( "Range" , 300.0f , 50.0f , 500.0f ) );
     public Setting < Boolean > message = this.register ( new Setting <> ( "Message" , false ) );
 
     public
     LogoutSpots ( ) {
-        super ( "LogoutSpots" , "Renders LogoutSpots" , Module.Category.RENDER , true , false , false );
+        super ( "LogoutSpots" , "Renders LogoutSpots" , Module.Category.PLAYER , true , false , false );
     }
 
     @Override
