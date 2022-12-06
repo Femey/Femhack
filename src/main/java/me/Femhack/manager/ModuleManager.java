@@ -89,6 +89,7 @@ public class ModuleManager
         this.modules.add(new AutoSex());
         this.modules.add(new AutoSignKick());
         this.modules.add(new OffhandPlus());
+        this.modules.add(new DonkeyFinder());
         this.modules.add(new BowBomb());
         this.modules.add(new ChinaText());
         this.modules.add(new MainHandTotem());
