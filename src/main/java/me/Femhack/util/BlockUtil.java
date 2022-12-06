@@ -375,7 +375,7 @@ public class BlockUtil
         return BlockUtil.getBlock(pos).canCollideCheck(BlockUtil.getState(pos), false);
     }
 
-    private static Block getBlock(BlockPos pos) {
+    public static Block getBlock(BlockPos pos) {
         return BlockUtil.getState(pos).getBlock();
     }
 

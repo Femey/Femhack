@@ -95,6 +95,7 @@ public class ModuleManager
         this.modules.add(new Coordleaker());
         this.modules.add(new NoChinaText());
         this.modules.add(new PenisESP());
+        this.modules.add(new CevBreaker());
         this.modules.add(new Suicide());
         this.modules.add(new Step());
         this.modules.add(new Scaffold());
