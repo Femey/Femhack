@@ -10,7 +10,10 @@ import me.Femhack.features.modules.Module;
 import me.Femhack.features.modules.client.ClickGui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -95,7 +98,7 @@ public class FemhackGui
         this.drawDefaultBackground();
         this.components.forEach(components -> components.drawScreen(mouseX, mouseY, partialTicks));
         if (ClickGui.getInstance().particleMode.getValue() == ClickGui.Mode.Normal) {
-            this.particleSystem.tick(8);
+            this.particleSystem.tick(ClickGui.getInstance().pSpeed.getValue());
             this.particleSystem.render();
         }
         final ScaledResolution res = new ScaledResolution(mc);
@@ -144,6 +147,22 @@ public class FemhackGui
     public void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
         this.components.forEach(component -> component.onKeyTyped(typedChar, keyCode));
+    }
+
+    public static void drawCompleteImage(int posX, int posY, int width, int height) {
+        GL11.glPushMatrix();
+        GL11.glTranslatef((float) posX, (float) posY, 0.0f);
+        GL11.glBegin(7);
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(0.0f, 0.0f, 0.0f);
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(0.0f, (float) height, 0.0f);
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f((float) width, (float) height, 0.0f);
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f((float) width, 0.0f, 0.0f);
+        GL11.glEnd();
+        GL11.glPopMatrix();
     }
 }
 

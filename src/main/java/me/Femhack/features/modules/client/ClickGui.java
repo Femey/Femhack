@@ -3,17 +3,21 @@ package me.Femhack.features.modules.client;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
 import me.Femhack.event.events.ClientEvent;
+import me.Femhack.event.events.Render2DEvent;
 import me.Femhack.features.command.Command;
 import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.modules.Module;
 import me.Femhack.util.Util;
 import me.Femhack.features.setting.Setting;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClickGui
         extends Module {
     private static ClickGui INSTANCE = new ClickGui();
+    public static ResourceLocation logo = new ResourceLocation("textures/uwu.png");
     public Setting<String> prefix = this.register(new Setting<String>("Prefix", "."));
     public Setting<Boolean> customFov = this.register(new Setting<Boolean>("CustomFov", false));
     public Setting<Float> fov = this.register(new Setting<Float>("Fov", Float.valueOf(150.0f), Float.valueOf(-180.0f), Float.valueOf(180.0f)));
@@ -31,7 +35,14 @@ public class ClickGui
     public Setting<Integer> rainbowHue = this.register(new Setting<Object>("Delay", Integer.valueOf(240), Integer.valueOf(0), Integer.valueOf(600), v -> this.rainbow.getValue()));
     public Setting<Float> rainbowBrightness = this.register(new Setting<Object>("Brightness ", Float.valueOf(150.0f), Float.valueOf(1.0f), Float.valueOf(255.0f), v -> this.rainbow.getValue()));
     public Setting<Float> rainbowSaturation = this.register(new Setting<Object>("Saturation", Float.valueOf(150.0f), Float.valueOf(1.0f), Float.valueOf(255.0f), v -> this.rainbow.getValue()));
+    public Setting<Boolean> imageLogo = this.register(new Setting<Object>("Image", false));
+    public Setting<Integer> imageX = this.register(new Setting<Object>("ImageX", Integer.valueOf(2), Integer.valueOf(0), Integer.valueOf(1000), v -> this.imageLogo.getValue()));
+    public Setting<Integer> imageY = this.register(new Setting<Object>("ImageY", Integer.valueOf(2), Integer.valueOf(0), Integer.valueOf(1000), v -> this.imageLogo.getValue()));
+    public Setting<Integer> imageWidth = this.register(new Setting<Object>("ImageWidth", Integer.valueOf(100), Integer.valueOf(0), Integer.valueOf(1000), v -> this.imageLogo.getValue()));
+    public Setting<Integer> imageHeight = this.register(new Setting<Object>("ImageHeight", Integer.valueOf(100), Integer.valueOf(0), Integer.valueOf(1000), v -> this.imageLogo.getValue()));
+
     public Setting<Mode> particleMode = this.register(new Setting<Object>("Particle", Mode.Normal));
+    public Setting<Integer> pSpeed = this.register(new Setting<Object>("Particle Speed", 1, 15, 8, v -> this.particleMode.getValue() == Mode.Normal));
     public Setting<Float> pRed = this.register(new Setting<Float>("Particle Red", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
     public Setting<Float> pGreen = this.register(new Setting<Float>("Particle Green", 0f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
     public Setting<Float> pBlue = this.register(new Setting<Float>("Particle Blue", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
@@ -71,6 +82,10 @@ public class ClickGui
             }
             Femhack.colorManager.setColor(this.red.getPlannedValue(), this.green.getPlannedValue(), this.blue.getPlannedValue(), this.hoverAlpha.getPlannedValue());
         }
+
+        if (imageLogo.getValue()){
+
+        }
     }
 
     @Override
@@ -88,6 +103,26 @@ public class ClickGui
     public void onTick() {
         if (!(ClickGui.mc.currentScreen instanceof FemhackGui)) {
             this.disable();
+        }
+    }
+
+    public void drawImageLogo() {
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        mc.getTextureManager().bindTexture(logo);
+        FemhackGui.drawCompleteImage(ClickGui.getInstance().imageX.getValue(), ClickGui.getInstance().imageY.getValue(), ClickGui.getInstance().imageWidth.getValue(), ClickGui.getInstance().imageHeight.getValue());
+        mc.getTextureManager().deleteTexture(logo);
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+    }
+
+    @Override
+    public void onRender2D(Render2DEvent event) {
+        if (ClickGui.fullNullCheck()) {
+            return;
+        }
+        if (this.imageLogo.getValue().booleanValue()) {
+            drawImageLogo();
         }
     }
 
