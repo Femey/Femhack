@@ -123,7 +123,7 @@ public class Femhack {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        Display.setTitle("Femhack v1.0");
+        Display.setTitle("Femhack v1.2");
         Femhack.load();
     }
 }
