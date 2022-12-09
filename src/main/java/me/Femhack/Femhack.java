@@ -8,11 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
-@Mod(modid = "femhack", name = "Femhack", version = "1.0")
+@Mod(modid = "femhack", name = "Femhack", version = "1.2")
 public class Femhack {
     public static final String MODID = "femhack";
     public static final String MODNAME = "Femhack";
-    public static final String MODVER = "1.0";
+    public static final String MODVER = "1.2";
     public static final Logger LOGGER = LogManager.getLogger("Femhack");
     public static CommandManager commandManager;
     public static FriendManager friendManager;

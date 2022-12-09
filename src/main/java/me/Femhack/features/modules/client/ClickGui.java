@@ -31,6 +31,12 @@ public class ClickGui
     public Setting<Integer> rainbowHue = this.register(new Setting<Object>("Delay", Integer.valueOf(240), Integer.valueOf(0), Integer.valueOf(600), v -> this.rainbow.getValue()));
     public Setting<Float> rainbowBrightness = this.register(new Setting<Object>("Brightness ", Float.valueOf(150.0f), Float.valueOf(1.0f), Float.valueOf(255.0f), v -> this.rainbow.getValue()));
     public Setting<Float> rainbowSaturation = this.register(new Setting<Object>("Saturation", Float.valueOf(150.0f), Float.valueOf(1.0f), Float.valueOf(255.0f), v -> this.rainbow.getValue()));
+    public Setting<Mode> particleMode = this.register(new Setting<Object>("Particle", Mode.Normal));
+    public Setting<Float> pRed = this.register(new Setting<Float>("Particle Red", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Float> pGreen = this.register(new Setting<Float>("Particle Green", 0f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Float> pBlue = this.register(new Setting<Float>("Particle Blue", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Float> pAlpha = this.register(new Setting<Float>("Particle Alpha", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
+
     private FemhackGui click;
 
     public ClickGui() {
@@ -95,6 +101,12 @@ public class ClickGui
         Static,
         Sideway
 
+    }
+
+    public enum Mode {
+        Normal,
+        Snowing,
+        None
     }
 }
 
