@@ -82,10 +82,6 @@ public class ClickGui
             }
             Femhack.colorManager.setColor(this.red.getPlannedValue(), this.green.getPlannedValue(), this.blue.getPlannedValue(), this.hoverAlpha.getPlannedValue());
         }
-
-        if (imageLogo.getValue()){
-
-        }
     }
 
     @Override
