@@ -4,7 +4,6 @@
   "package": "me.Femhack.mixin.mixins",
   "refmap": "mixins.Femhack.refmap.json",
   "mixins": [
-    "AccessorCPacketPlayer",
     "MixinBlockLiquid",
     "MixinEntityPlayer",
     "MixinEntityPlayerSP",
