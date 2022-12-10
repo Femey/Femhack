@@ -95,7 +95,9 @@ public class FemhackGui
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.checkMouseWheel();
-        this.drawDefaultBackground();
+        if (ClickGui.getInstance().darkBackGround.getValue()) {
+            this.drawDefaultBackground();
+        }
         this.components.forEach(components -> components.drawScreen(mouseX, mouseY, partialTicks));
         if (ClickGui.getInstance().particleMode.getValue() == ClickGui.Mode.Normal) {
             this.particleSystem.tick(ClickGui.getInstance().pSpeed.getValue());
