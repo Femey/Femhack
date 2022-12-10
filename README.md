@@ -9,6 +9,6 @@ Version 1.3 :3
 # Thingys i gotta work on >w<
 
 * Notifications
-* Dvdlogo
+* Superherofx
 * ElytraFly
 * Motionblur?
