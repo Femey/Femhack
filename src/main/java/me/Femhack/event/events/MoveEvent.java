@@ -11,6 +11,9 @@ public class MoveEvent
     private double x;
     private double y;
     private double z;
+    public double motionX;
+    public double motionY;
+    public double motionZ;
 
     public MoveEvent(int stage, MoverType type, double x, double y, double z) {
         super(stage);
@@ -18,6 +21,9 @@ public class MoveEvent
         this.x = x;
         this.y = y;
         this.z = z;
+        this.motionX = motionX;
+        this.motionY = motionY;
+        this.motionZ = motionZ;
     }
 
     public MoverType getType() {

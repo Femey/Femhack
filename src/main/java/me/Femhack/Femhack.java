@@ -35,9 +35,11 @@ public class Femhack {
     @Mod.Instance
     public static Femhack INSTANCE;
     private static boolean unloaded;
+    public static float TICK_TIMER;
 
     static {
         unloaded = false;
+        Femhack.TICK_TIMER = 1.0f;
     }
 
     public static void load() {
