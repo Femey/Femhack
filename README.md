@@ -8,4 +8,7 @@ Version 1.3 :3
 
 # Thingys i gotta work on >w<
 
-* Arrow tracers
+* Notifications
+* Dvdlogo
+* ElytraFly
+* Motionblur?
