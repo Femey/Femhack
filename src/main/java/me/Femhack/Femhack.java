@@ -8,11 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.Display;
 
-@Mod(modid = "femhack", name = "Femhack", version = "1.2")
+@Mod(modid = "femhack", name = "Femhack", version = "1.3")
 public class Femhack {
     public static final String MODID = "femhack";
     public static final String MODNAME = "Femhack";
-    public static final String MODVER = "1.2";
+    public static final String MODVER = "1.3";
     public static final Logger LOGGER = LogManager.getLogger("Femhack");
     public static CommandManager commandManager;
     public static FriendManager friendManager;
@@ -123,7 +123,7 @@ public class Femhack {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        Display.setTitle("Femhack v1.2");
+        Display.setTitle("Femhack v1.3");
         Femhack.load();
     }
 }
