@@ -42,7 +42,7 @@ public class ClickGui
     public Setting<Integer> imageHeight = this.register(new Setting<Object>("ImageHeight", Integer.valueOf(100), Integer.valueOf(0), Integer.valueOf(1000), v -> this.imageLogo.getValue()));
 
     public Setting<Mode> particleMode = this.register(new Setting<Object>("Particle", Mode.Normal));
-    public Setting<Integer> pSpeed = this.register(new Setting<Object>("Particle Speed", 1, 15, 8, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Integer> pSpeed = this.register(new Setting<Object>("Particle Speed", 8, 1, 15, v -> this.particleMode.getValue() == Mode.Normal));
     public Setting<Float> pRed = this.register(new Setting<Float>("Particle Red", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
     public Setting<Float> pGreen = this.register(new Setting<Float>("Particle Green", 0f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
     public Setting<Float> pBlue = this.register(new Setting<Float>("Particle Blue", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
