@@ -33,7 +33,7 @@ public class PopChams extends Module
         this.self = (Setting<Boolean>)this.register(new Setting("SelfPop", false));
         this.anim = (Setting<Boolean>)this.register(new Setting("Copy Animations", false));
         this.maxOffset = (Setting<Float>)this.register(new Setting("MaxOffset",0.1f, 0.1f, 15.0f));
-        this.speed = (Setting<Float>)this.register(new Setting("Speed", 0.1f, 0.1f, 10.0f));
+        this.speed = (Setting<Float>)this.register(new Setting("Speed", 10f, 0.1f, 20.0f));
         this.red = (Setting<Float>)this.register(new Setting("Red", 255f, 0f, 255f));
         this.green = (Setting<Float>)this.register(new Setting("Green", 255f, 0f, 255f));
         this.blue = (Setting<Float>)this.register(new Setting("Blue", 255f, 0f, 255f));

@@ -45,6 +45,7 @@ public class ModuleManager
         this.modules.add(new HUD());
         this.modules.add(new BlockHighlight());
         this.modules.add(new HoleESP());
+        this.modules.add(new ExplosionChams());
         this.modules.add(new Skeleton());
         this.modules.add(new Wireframe());
         this.modules.add(new Replenish());
