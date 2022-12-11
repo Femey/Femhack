@@ -1,7 +1,10 @@
 package me.Femhack.features.modules.troll;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.Femhack.event.events.Render3DEvent;
 import me.Femhack.features.modules.Module;
+import me.Femhack.features.modules.combat.AutoCrystal;
+import me.Femhack.features.setting.Setting;
 import me.Femhack.util.ColorUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderHelper;
@@ -17,6 +20,11 @@ class AssESP
     public AssESP( ) {
         super ( "AssEsp" , "Want to have gay sex with your friend? Your solution is here!" , Module.Category.TROLL , true , false , false );
     }
+    private final Setting<Boolean> Rainbow = this.register(new Setting<Object>("Rainbow", true));
+    private final Setting<Integer> Red = this.register(new Setting<Object>("Red", Integer.valueOf(150), Integer.valueOf(0), Integer.valueOf(255), v -> this.Rainbow.getValue() != true));
+    private final Setting<Integer> Green = this.register(new Setting<Object>("Green", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), v -> this.Rainbow.getValue() != true));
+    private final Setting<Integer> Blue = this.register(new Setting<Object>("Blue", Integer.valueOf(150), Integer.valueOf(0), Integer.valueOf(255), v -> this.Rainbow.getValue() != true));
+    private final Setting<Integer> Alpha = this.register(new Setting<Object>("Alpha", Integer.valueOf(40), Integer.valueOf(0), Integer.valueOf(255), v -> this.Rainbow.getValue() != true));
 
     @Override
     public
@@ -53,7 +61,11 @@ class AssESP
         GL11.glRotatef ( - entityPlayer.rotationYaw , 0.0f , entityPlayer.height , 0.0f );
         GL11.glTranslated ( - d , - d2 , - d3 );
         GL11.glTranslated ( d , d2 + (double) ( entityPlayer.height / 2.0f ) - (double) 0.225f , d3 );
-        GL11.glColor4f ( (ColorUtil.rainbow(50).getRed() / 255.0f) , (ColorUtil.rainbow(50).getGreen() / 255.0f) , (ColorUtil.rainbow(50).getBlue() / 255.0f) , 1.0f );
+        if (Rainbow.getValue()){
+            GL11.glColor4f ( (ColorUtil.rainbow(50).getRed() / 255.0f) , (ColorUtil.rainbow(50).getGreen() / 255.0f) , (ColorUtil.rainbow(50).getBlue() / 255.0f) , 1.0f );
+        } else {
+            GL11.glColor4f ( (Red.getValue() / 255.0f) , (Green.getValue() / 255.0f) , (Blue.getValue() / 255.0f) , Alpha.getValue() / 255.0f);
+        }
         GL11.glRotated ( ( entityPlayer.isSneaking ( ) ? 35 : 0) , 1.0f, 0.0, 0);
         Sphere sphere = new Sphere ( );
         GL11.glTranslated ( -0.15 , 0.0 , -0.2);
