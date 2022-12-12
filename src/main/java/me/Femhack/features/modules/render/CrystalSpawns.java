@@ -12,9 +12,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import org.lwjgl.opengl.GL11;
 
-public class ExplosionChams
+public class CrystalSpawns
         extends Module {
-    private static ExplosionChams INSTANCE = new ExplosionChams();
+    private static CrystalSpawns INSTANCE = new CrystalSpawns();
     private final Setting<Boolean> Rainbow = this.register(new Setting<Object>("Rainbow", true));
     private final Setting<Integer> Red = this.register(new Setting<Object>("Red", Integer.valueOf(150), Integer.valueOf(0), Integer.valueOf(255)));
     private final Setting<Integer> Green = this.register(new Setting<Object>("Green", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255)));
@@ -22,14 +22,14 @@ public class ExplosionChams
 
     public static HashMap<UUID, Thingering> thingers;
 
-    public ExplosionChams() {
-        super("ExplosionChams", "ExplosionChams", Category.MISC, true, false, false);
+    public CrystalSpawns() {
+        super("CrystalSpawns", "CrystalSpawns", Category.RENDER, true, false, false);
         this.setInstance();
     }
 
-    public static ExplosionChams getInstance() {
+    public static CrystalSpawns getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new ExplosionChams();
+            INSTANCE = new CrystalSpawns();
         }
         return INSTANCE;
     }
@@ -40,10 +40,10 @@ public class ExplosionChams
 
     @Override
     public void onUpdate() {
-        for (Entity entity : ExplosionChams.mc.world.loadedEntityList) {
+        for (Entity entity : CrystalSpawns.mc.world.loadedEntityList) {
             if (!(entity instanceof EntityEnderCrystal) || thingers.containsKey(entity.getUniqueID())) continue;
             thingers.put(entity.getUniqueID(), new Thingering(this, entity));
-            ExplosionChams.thingers.get((Object)entity.getUniqueID()).starTime = System.currentTimeMillis();
+            CrystalSpawns.thingers.get((Object)entity.getUniqueID()).starTime = System.currentTimeMillis();
         }
     }
 
@@ -52,7 +52,7 @@ public class ExplosionChams
      */
     @Override
     public void onRender3D(Render3DEvent eventRender3D) {
-        if (ExplosionChams.mc.player == null || ExplosionChams.mc.world == null) {
+        if (CrystalSpawns.mc.player == null || CrystalSpawns.mc.world == null) {
             return;
         }
         for (Map.Entry<UUID, Thingering> entry : thingers.entrySet()) {
@@ -63,7 +63,7 @@ public class ExplosionChams
             if (duration < ((long)-1747803867 ^ 0xFFFFFFFF97D2A4F9L)) {
                 opacity = Float.intBitsToFloat(Float.floatToIntBits(13.7902155f) ^ 0x7EDCA4B9) - (float)duration / Float.intBitsToFloat(Float.floatToIntBits(6.1687006E-4f) ^ 0x7E9A3573);
             }
-            ExplosionChams.drawCircle(entry.getValue().entity, eventRender3D.getPartialTicks(), Double.longBitsToDouble(Double.doubleToLongBits(205.3116845075892) ^ 0x7F89A9F951C9D87FL), (float)(System.currentTimeMillis() - entry.getValue().starTime) / Float.intBitsToFloat(Float.floatToIntBits(0.025765074f) ^ 0x7E1B1147), opacity);
+            CrystalSpawns.drawCircle(entry.getValue().entity, eventRender3D.getPartialTicks(), Double.longBitsToDouble(Double.doubleToLongBits(205.3116845075892) ^ 0x7F89A9F951C9D87FL), (float)(System.currentTimeMillis() - entry.getValue().starTime) / Float.intBitsToFloat(Float.floatToIntBits(0.025765074f) ^ 0x7E1B1147), opacity);
         }
     }
 
@@ -75,15 +75,15 @@ public class ExplosionChams
         GL11.glDepthMask(false);
         GL11.glLineWidth(Float.intBitsToFloat(Float.floatToIntBits(0.8191538f) ^ 0x7F11B410));
         GL11.glBegin(3);
-        final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - ExplosionChams.mc.getRenderManager().viewerPosX;
-        final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - ExplosionChams.mc.getRenderManager().viewerPosY;
-        final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - ExplosionChams.mc.getRenderManager().viewerPosZ;
+        final double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - CrystalSpawns.mc.getRenderManager().viewerPosX;
+        final double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - CrystalSpawns.mc.getRenderManager().viewerPosY;
+        final double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - CrystalSpawns.mc.getRenderManager().viewerPosZ;
         final double pix2 = Double.longBitsToDouble(Double.doubleToLongBits(0.12418750450734782) ^ 0x7FA6EB3BC22A7D2FL);
         for (int i = 0; i <= 90; ++i) {
-            if (ExplosionChams.getInstance().Rainbow.getValue()){
+            if (CrystalSpawns.getInstance().Rainbow.getValue()){
                 GL11.glColor4f ( (ColorUtil.rainbow(50).getRed() / 255.0f) , (ColorUtil.rainbow(50).getGreen() / 255.0f) , (ColorUtil.rainbow(50).getBlue() / 255.0f) , alpha);
             } else {
-                GL11.glColor4f ( (ExplosionChams.getInstance().Red.getValue() / 255.0f) , (ExplosionChams.getInstance().Green.getValue() / 255.0f) , (ExplosionChams.getInstance().Blue.getValue() / 255.0f) , alpha);
+                GL11.glColor4f ( (CrystalSpawns.getInstance().Red.getValue() / 255.0f) , (CrystalSpawns.getInstance().Green.getValue() / 255.0f) , (CrystalSpawns.getInstance().Blue.getValue() / 255.0f) , alpha);
             }
             GL11.glVertex3d(x + rad * Math.cos(i * Double.longBitsToDouble(Double.doubleToLongBits(0.038923223119235344) ^ 0x7FBACC45F0F011C7L) / Double.longBitsToDouble(Double.doubleToLongBits(0.010043755046771538) ^ 0x7FC211D1FBA3AC6BL)), y + plusY / Float.intBitsToFloat(Float.floatToIntBits(0.13022153f) ^ 0x7F2558CB), z + rad * Math.sin(i * Double.longBitsToDouble(Double.doubleToLongBits(0.012655047216797511) ^ 0x7F90CB18FB234FBFL) / Double.longBitsToDouble(Double.doubleToLongBits(0.00992417958121009) ^ 0x7FC2D320D5ED6BD3L)));
         }
@@ -120,9 +120,9 @@ public class ExplosionChams
     public class Thingering {
         public Entity entity;
         public long starTime;
-        public ExplosionChams this$0;
+        public CrystalSpawns this$0;
 
-        public Thingering(ExplosionChams this$0, Entity entity) {
+        public Thingering(CrystalSpawns this$0, Entity entity) {
             this.this$0 = this$0;
             this.entity = entity;
             this.starTime = (long)1417733199 ^ 0x5480E44FL;
