@@ -77,6 +77,3 @@ nb-configuration.xml
 *.iws
 *.launch
 *.number
-
-# macOS system generate files
-.DS_Store
