@@ -36,6 +36,7 @@ public class FemboyESP extends Module
     private final Setting<Boolean> reload = this.register(new Setting<Boolean>("ReloadTexture", false));
     private ResourceLocation femboy;
     private ICamera camera;
+
     public static final EventBus EVENT_BUS = MinecraftForge.EVENT_BUS;
 
     public FemboyESP() {
@@ -64,15 +65,14 @@ public class FemboyESP extends Module
             return null;
         }
     }
+
     @Override
     public void onUpdate() {
         if (this.reload.getValue()) {
             this.femboy = null;
             this.onLoad();
-            return;
         }
     }
-
 
     private boolean shouldDraw(final EntityLivingBase entity) {
         return !entity.equals((Object) FemboyESP.mc.player) && entity.getHealth() > 0.0f && EntityUtil.isPlayer((Entity)entity);
