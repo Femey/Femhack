@@ -5,6 +5,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
 import me.Femhack.event.events.*;
 import me.Femhack.features.modules.combat.AutoCrystal;
+import me.Femhack.features.modules.troll.ChinaText;
 import me.Femhack.util.Timer;
 import me.Femhack.features.Feature;
 import me.Femhack.features.command.Command;
@@ -77,10 +78,17 @@ public class EventManager extends Feature {
             return;
         Femhack.moduleManager.onTick();
         for (EntityPlayer player : mc.world.playerEntities) {
-            if (player == null || player.getHealth() > 0.0F)
-                continue;
-            MinecraftForge.EVENT_BUS.post(new DeathEvent(player));
-            PopCounter.getInstance().onDeath(player);
+            if (player != null){
+                if (player.getHealth() > 0.0F) {
+                    continue;
+                }
+                MinecraftForge.EVENT_BUS.post(new DeathEvent(player));
+                if (!PopCounter.getInstance().isEnabled()){
+                    continue;
+                }
+                PopCounter.getInstance().onDeath(player);
+            }
+
         }
     }
 
@@ -109,7 +117,12 @@ public class EventManager extends Feature {
             if (packet.getOpCode() == 35 && packet.getEntity(mc.world) instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) packet.getEntity(mc.world);
                 MinecraftForge.EVENT_BUS.post(new TotemPopEvent(player));
-                PopCounter.getInstance().onTotemPop(player);
+                if (PopCounter.getInstance().isEnabled()) {
+                    PopCounter.getInstance().onTotemPop(player);
+                }
+                if (ChinaText.getInstance().isEnabled()) {
+                    ChinaText.getInstance().onTotemPop(player);
+                }
             }
         }
         if (event.getPacket() instanceof SPacketPlayerListItem && !fullNullCheck() && this.logoutTimer.passedS(1.0D)) {

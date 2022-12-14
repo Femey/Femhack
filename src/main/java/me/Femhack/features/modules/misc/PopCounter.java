@@ -35,7 +35,7 @@ public class PopCounter
 
     public void onDeath(EntityPlayer player) {
         if (TotemPopContainer.containsKey(player.getName())) {
-            int l_Count = TotemPopContainer.get(player.getName());
+            final int l_Count = TotemPopContainer.get(player.getName());
             TotemPopContainer.remove(player.getName());
             if (l_Count == 1) {
                 Command.sendMessage(ChatFormatting.RED + player.getName() + " died after popping " + ChatFormatting.GREEN + l_Count + ChatFormatting.RED + " Totem!");
@@ -66,4 +66,3 @@ public class PopCounter
         }
     }
 }
-
