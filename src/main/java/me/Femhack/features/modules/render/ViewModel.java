@@ -28,6 +28,10 @@ public class ViewModel extends Module
     public Setting<Double> offScaleX = this.register(new Setting("OffScaleX", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
     public Setting<Double> offScaleY = this.register(new Setting("OffScaleY", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
     public Setting<Double> offScaleZ = this.register(new Setting("OffScaleZ", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
+    public Setting<Double> mainScaleX = this.register(new Setting("MainScaleX", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
+    public Setting<Double> mainScaleY = this.register(new Setting("MainScaleY", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
+    public Setting<Double> mainScaleZ = this.register(new Setting("MainScaleZ", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
+
 
     public ViewModel() {
         super("ItemModel", "Cool", Category.RENDER, true, false, false);
@@ -62,6 +66,9 @@ public class ViewModel extends Module
         event.setOffHandScaleX(this.offScaleX.getValue());
         event.setOffHandScaleY(this.offScaleY.getValue());
         event.setOffHandScaleZ(this.offScaleZ.getValue());
+        event.setMainHandScaleX(this.mainScaleX.getValue());
+        event.setMainHandScaleY(this.mainScaleY.getValue());
+        event.setMainHandScaleZ(this.mainScaleZ.getValue());
     }
 
     static {
