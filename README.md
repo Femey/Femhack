@@ -16,4 +16,4 @@ Version 1.4 :3
 
 # Aprovals
 
-![alt text](https://cdn.discordapp.com/attachments/713263100794503198/1053219917656236063/image.png)
+!(https://cdn.discordapp.com/attachments/713263100794503198/1053219917656236063/image.png)
