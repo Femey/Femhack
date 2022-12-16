@@ -14,6 +14,7 @@ Version 1.4 :3
 * Motionblur?
 * PortalEsp
 
-# Aprovals
+# Approvals
 
-!(https://cdn.discordapp.com/attachments/713263100794503198/1053219917656236063/image.png)
+Herehing approved 👍 
+! (https://cdn.discordapp.com/attachments/713263100794503198/1053219917656236063/image.png)
