@@ -12,7 +12,6 @@ Version 1.4 :3
 * Superherofx
 * ElytraFly
 * Motionblur?
-* PortalEsp
 
 # Approvals
 
