@@ -20,6 +20,10 @@
     "MixinPlayerControllerMP",
     "MixinRenderEnderCrystal",
     "MixinRenderLivingBase",
-    "MixinWorld"
+    "MixinWorld",
+    "accessors.ICPacketUseEntity",
+    "accessors.IEntityLivingBase",
+    "accessors.IEntityPlayerSP",
+    "accessors.IRenderManager"
   ]
 }
