@@ -39,9 +39,11 @@ public class ModuleManager
 
     public void init() {
         this.modules.add(new ClickGui());
+        this.modules.add(new ElytraFly());
         this.modules.add(new PopChams());
         this.modules.add(new FontMod());
         this.modules.add(new ExtraTab());
+        this.modules.add(new Velocity());
         this.modules.add(new HUD());
         this.modules.add(new BlockHighlight());
         this.modules.add(new HoleESP());

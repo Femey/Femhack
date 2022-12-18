@@ -1,65 +1,66 @@
 package me.Femhack.features.modules.player;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
-import me.Femhack.features.command.Command;
-import me.Femhack.features.modules.Module;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
-import org.apache.commons.io.IOUtils;
-
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
-
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.util.math.MathHelper;
-import me.Femhack.util.DamageUtil;
-import net.minecraft.network.play.server.SPacketExplosion;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.Femhack.event.events.PacketEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraft.item.ItemStack;
+import me.Femhack.event.events.TotemPopEvent;
+import me.Femhack.features.modules.*;
+import me.Femhack.util.DamageUtil;
+import me.Femhack.util.PositionforFPUtil;
+import me.Femhack.util.Timer;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.*;
+import me.Femhack.features.setting.*;
+import com.mojang.authlib.*;
+import net.minecraft.entity.item.EntityEnderCrystal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
-import me.Femhack.event.events.PlayerLivingUpdateEvent;
-import me.Femhack.features.command.Command;
-import com.mojang.realmsclient.gui.ChatFormatting;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
-import com.mojang.authlib.GameProfile;
-import java.util.UUID;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
-import me.Femhack.features.setting.Setting;
-import me.Femhack.features.modules.Module;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.play.server.SPacketSoundEffect;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.world.*;
+import net.minecraft.entity.*;
+import net.minecraft.network.*;
+import java.util.*;
 
-public class FakePlayer extends Module
-{
+import net.minecraft.potion.*;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+public class FakePlayer extends Module {
+    final private ItemStack[] armors = new ItemStack[]{
+            new ItemStack(Items.DIAMOND_BOOTS),
+            new ItemStack(Items.DIAMOND_LEGGINGS),
+            new ItemStack(Items.DIAMOND_CHESTPLATE),
+            new ItemStack(Items.DIAMOND_HELMET)
+    };
+
+    private final me.Femhack.util.Timer timer = new Timer();
+
     private static FakePlayer INSTANCE;
 
-    private final Setting<Boolean> pops;
-    private final Setting<Boolean> totemPopParticle;
-    private final Setting<Boolean> totemPopSound;
-    public Setting<Boolean> move;
-    public Setting<Type> type;
-    public Setting<Integer> chaseX;
-    public Setting<Integer> chaseY;
-    public Setting<Integer> chaseZ;
-    public EntityOtherPlayerMP fakePlayer;
+    public Setting<Integer> vulnerabilityTick = this.register(new Setting<>("Vulnerability Tick", 4, 0, 10));
+    public Setting<Integer> resetHealth = this.register(new Setting<>("Reset Health", 10, 0, 36));
+    public Setting<Integer> tickRegenVal = this.register(new Setting<>("Tick Regen", 4, 0, 30));
+    public Setting<Integer> startHealth = this.register(new Setting<>("Start Health", 20, 0, 30));
+
+    public Setting<String> nameFakePlayer = this.register(new Setting<String>("Name FakePlayer", "Femey"));
+    private Setting<Boolean> copyInventory = this.register(new Setting<Boolean>("Copy Inventory", false));
+
+    private Setting<Boolean> playerStacked = this.register(new Setting<Boolean>("Player Stacked", true, v -> !copyInventory.getValue()));
+    private Setting<Boolean> onShift = this.register(new Setting<Boolean>("On Crouch", false));
+    private Setting<Boolean> simulateDamage = this.register(new Setting<Boolean>("Simulate Damage", false));
+    private Setting<Boolean> resistance = this.register(new Setting<Boolean>("Resistance", true));
+    private Setting<Boolean> pop = this.register(new Setting<Boolean>("Pop", true));
+    private Setting<Boolean> gapple = this.register(new Setting<Boolean>("Gapple", false));
+    private Setting<Integer> gappleDelay = this.register(new Setting<Integer>("Gapple Delay", 500, 250, 1000));
+
 
     public FakePlayer() {
-        super("FakePlayer", "Spawns a FakePlayer for testing.", Category.PLAYER, true, false, false);
-        this.pops = (Setting<Boolean>)this.register(new Setting("TotemPops", true));
-        this.totemPopParticle = (Setting<Boolean>)this.register(new Setting("TotemPopParticle", true));
-        this.totemPopSound = (Setting<Boolean>)this.register(new Setting("TotemPopSound", true));
-        this.move = (Setting<Boolean>)this.register(new Setting("Move", true));
-        this.type = (Setting<Type>)this.register(new Setting("MovementMode", Type.STATIC, v -> this.move.getValue()));
-        this.chaseX = (Setting<Integer>)this.register(new Setting("ChaseX", 4, 1, 120, v -> this.move.getValue() && this.type.getValue() == Type.CHASE));
-        this.chaseY = (Setting<Integer>)this.register(new Setting("ChaseY", 4, 1, 120, v -> this.move.getValue() && this.type.getValue() == Type.CHASE));
-        this.chaseZ = (Setting<Integer>)this.register(new Setting("ChaseZ", 4, 1, 120, v -> this.move.getValue() && this.type.getValue() == Type.CHASE));
+        super("FakePlayer", "Epic code", Module.Category.PLAYER, true, false, false);
     }
 
     public static FakePlayer getInstance() {
@@ -69,113 +70,198 @@ public class FakePlayer extends Module
         return FakePlayer.INSTANCE;
     }
 
+
+    @Override
+    public void onLogout() {
+        if (this.isOn()) {
+            this.disable();
+            this.timer.reset();
+        }
+    }
+
+    int incr;
+
     @Override
     public void onEnable() {
-        if (FakePlayer.mc.world == null || FakePlayer.mc.player == null) {
-            this.disable();
-        }
-        else {
-            final UUID playerUUID = FakePlayer.mc.player.getUniqueID();
-            (this.fakePlayer = new EntityOtherPlayerMP((World)FakePlayer.mc.world, new GameProfile(UUID.fromString(playerUUID.toString()), FakePlayer.mc.player.getDisplayNameString()))).copyLocationAndAnglesFrom((Entity)FakePlayer.mc.player);
-            this.fakePlayer.inventory.copyInventory(FakePlayer.mc.player.inventory);
-            FakePlayer.mc.world.addEntityToWorld(-7777, (Entity)this.fakePlayer);
-            Command.sendMessage(ChatFormatting.GREEN + "Spawned fakeplayer");
-        }
-    }
-
-    @SubscribeEvent
-    public void onRender(final RenderWorldLastEvent event) {
-        if (this.type.getValue().equals(Type.CHASE)) {
-            this.fakePlayer.posX = FakePlayer.mc.player.posX + this.chaseX.getValue();
-            this.fakePlayer.posY = this.chaseY.getValue();
-            this.fakePlayer.posZ = FakePlayer.mc.player.posZ + this.chaseZ.getValue();
-        }
-    }
-
-    @SubscribeEvent
-    public void onPacketReceive(final PacketEvent.Receive event) {
-        if (this.fakePlayer == null) {
+        this.timer.reset();
+        incr = 0;
+        beforePressed = false;
+        if (mc.player == null || mc.player.isDead) {
+            disable();
             return;
         }
-        if (event.getPacket() instanceof SPacketExplosion) {
-            final SPacketExplosion explosion = event.getPacket();
-            if (this.fakePlayer.getDistance(explosion.getX(), explosion.getY(), explosion.getZ()) <= 15.0) {
-                final double damage = DamageUtil.calculateDamage(explosion.getX(), explosion.getY(), explosion.getZ(), (Entity)this.fakePlayer);
-                if (damage > 0.0 && this.pops.getValue()) {
-                    this.fakePlayer.setHealth((float)(this.fakePlayer.getHealth() - MathHelper.clamp(damage, 0.0, 999.0)));
+        if (!onShift.getValue())
+            spawnPlayer();
+    }
+
+    EntityOtherPlayerMP clonedPlayer = null;
+
+    void spawnPlayer() {
+        // Clone empty player
+        clonedPlayer = new EntityOtherPlayerMP(mc.world, new GameProfile(UUID.fromString("c8ccd8c1-322c-48e2-bca6-c9f6159aa973"), nameFakePlayer.getValue() + incr));
+        // Copy angles
+        clonedPlayer.copyLocationAndAnglesFrom(mc.player);
+        clonedPlayer.rotationYawHead = mc.player.rotationYawHead;
+        clonedPlayer.rotationYaw = mc.player.rotationYaw;
+        clonedPlayer.rotationPitch = mc.player.rotationPitch;
+        // set gameType
+        clonedPlayer.setGameType(GameType.SURVIVAL);
+        clonedPlayer.setHealth(startHealth.getValue());
+        // Add entity id
+        mc.world.addEntityToWorld((-1234 + incr), clonedPlayer);
+        incr++;
+        // Set invenotry
+        if (copyInventory.getValue())
+            clonedPlayer.inventory.copyInventory(mc.player.inventory);
+        else
+            // If enchants
+            if (playerStacked.getValue()) {
+                // Iterate
+                for (int i = 0; i < 4; i++) {
+                    // Create base
+                    ItemStack item = armors[i];
+                    // Add enchants
+                    item.addEnchantment(
+                            i == 3 ? Enchantments.BLAST_PROTECTION : Enchantments.PROTECTION,
+                            4);
+                    // Add it to the player
+                    clonedPlayer.inventory.armorInventory.set(i, item);
+
                 }
-                if (this.fakePlayer.getHealth() <= damage && this.pops.getValue()) {
-                    this.fakePop((Entity)this.fakePlayer);
-                    this.fakePlayer.setHealth(20.0f);
+            }
+        if (resistance.getValue())
+            clonedPlayer.addPotionEffect(new PotionEffect(Potion.getPotionById(11), 123456789, 0));
+        clonedPlayer.onEntityUpdate();
+        listPlayers.add(new playerInfo(clonedPlayer.getName()));
+    }
+
+    boolean beforePressed;
+
+    @Override
+    public void onUpdate() {
+        // OnShift add
+        if (onShift.getValue() && mc.gameSettings.keyBindSneak.isPressed() && !beforePressed) {
+            beforePressed = true;
+            spawnPlayer();
+        } else beforePressed = false;
+
+        // Update tick explosion
+        for (int i = 0; i < listPlayers.size(); i++) {
+            if (listPlayers.get(i).update()) {
+                int finalI = i;
+                Optional<EntityPlayer> temp = mc.world.playerEntities.stream().filter(
+                        e -> e.getName().equals(listPlayers.get(finalI).name)
+                ).findAny();
+                if (temp.isPresent())
+                    if (temp.get().getHealth() < 20)
+                        temp.get().setHealth(temp.get().getHealth() + 1);
+            }
+        }
+
+        if (gapple.getValue() && this.timer.passedMs(gappleDelay.getValue()))
+        {
+            clonedPlayer.setAbsorptionAmount(16.0f);
+            clonedPlayer.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 400, 1));
+            clonedPlayer.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 6000, 0));
+            clonedPlayer.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 6000, 0));
+            clonedPlayer.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 2400, 3));
+            this.timer.reset();
+        }
+    }
+
+
+    // Simple list of players for the pop
+    ArrayList<playerInfo> listPlayers = new ArrayList<>();
+
+    class playerInfo {
+        final String name;
+        int tickPop = -1;
+        int tickRegen = 0;
+
+        // We just set the new name
+        public playerInfo(String name) {
+            this.name = name;
+        }
+
+        // If update, we have to regen and decrease vulnerability tick
+        boolean update() {
+            if (tickPop != -1) {
+                if (++tickPop >= vulnerabilityTick.getValue())
+                    tickPop = -1;
+            }
+            if (++tickRegen >= tickRegenVal.getValue()) {
+                tickRegen = 0;
+                return true;
+            } else return false;
+        }
+
+        boolean canPop() {
+            return this.tickPop == -1;
+        }
+    }
+
+
+    public void onDisable() {
+        if (mc.world != null) {
+            for (int i = 0; i < incr; i++) {
+                mc.world.removeEntityFromWorld((-1234 + i));
+            }
+        }
+        listPlayers.clear();
+        positions.clear();
+    }
+
+
+    @SubscribeEvent
+    public void onPacketReceive(PacketEvent.Receive event) {
+        // Simple crystal damage
+        if (simulateDamage.getValue()) {
+            Packet<?> packet = event.getPacket();
+            if (packet instanceof SPacketSoundEffect) {
+                final SPacketSoundEffect packetSoundEffect = (SPacketSoundEffect) packet;
+                if (packetSoundEffect.getCategory() == SoundCategory.BLOCKS && packetSoundEffect.getSound() == SoundEvents.ENTITY_GENERIC_EXPLODE) {
+                    for (Entity entity : new ArrayList<>(mc.world.loadedEntityList)) {
+                        if (entity instanceof EntityEnderCrystal) {
+                            if (entity.getDistanceSq(packetSoundEffect.getX(), packetSoundEffect.getY(), packetSoundEffect.getZ()) <= 36.0f) {
+                                for (EntityPlayer entityPlayer : mc.world.playerEntities) {
+                                    // If the player is like we want to be
+                                    if (entityPlayer.getName().split(nameFakePlayer.getValue()).length == 2) {
+
+                                        Optional<playerInfo> temp = listPlayers.stream().filter(
+                                                e -> e.name.equals(entityPlayer.getName())
+                                        ).findAny();
+                                        // If he is in wait, continue
+                                        if (!temp.isPresent() || !temp.get().canPop())
+                                            continue;
+
+                                        // Calculate damage
+                                        float damage = DamageUtil.calculateDamage(packetSoundEffect.getX(), packetSoundEffect.getY(), packetSoundEffect.getZ(), entityPlayer, false);
+                                        if (damage > entityPlayer.getHealth()) {
+                                            // If higher, new health and pop
+                                            entityPlayer.setHealth(resetHealth.getValue());
+                                            if (pop.getValue()) {
+                                                mc.effectRenderer.emitParticleAtEntity(entityPlayer, EnumParticleTypes.TOTEM, 30);
+                                                mc.world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0F, 1.0F, false);
+                                            }
+                                            MinecraftForge.EVENT_BUS.post(new TotemPopEvent(entityPlayer));
+
+                                            // Else, setHealth
+                                        } else entityPlayer.setHealth(entityPlayer.getHealth() - damage);
+
+                                        // Add vulnerability
+                                        temp.get().tickPop = 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    @SubscribeEvent
-    public void onTick(final PlayerLivingUpdateEvent event) {
-        if (this.pops.getValue()) {
-            this.travel(this.fakePlayer.moveStrafing, this.fakePlayer.moveVertical, this.fakePlayer.moveForward);
-        }
-    }
-
-    public void travel(final float strafe, final float vertical, final float forward) {
-        final double d0 = this.fakePlayer.posY;
-        float f1 = 0.8f;
-        float f2 = 0.02f;
-        float f3 = (float)EnchantmentHelper.getDepthStriderModifier((EntityLivingBase)this.fakePlayer);
-        if (f3 > 3.0f) {
-            f3 = 3.0f;
-        }
-        if (!this.fakePlayer.onGround) {
-            f3 *= 0.5f;
-        }
-        if (f3 > 0.0f) {
-            f1 += (0.54600006f - f1) * f3 / 3.0f;
-            f2 += (this.fakePlayer.getAIMoveSpeed() - f2) * f3 / 4.0f;
-        }
-        this.fakePlayer.moveRelative(strafe, vertical, forward, f2);
-        this.fakePlayer.move(MoverType.SELF, this.fakePlayer.motionX, this.fakePlayer.motionY, this.fakePlayer.motionZ);
-        final EntityOtherPlayerMP fakePlayer = this.fakePlayer;
-        fakePlayer.motionX *= f1;
-        final EntityOtherPlayerMP fakePlayer2 = this.fakePlayer;
-        fakePlayer2.motionY *= 0.800000011920929;
-        final EntityOtherPlayerMP fakePlayer3 = this.fakePlayer;
-        fakePlayer3.motionZ *= f1;
-        if (!this.fakePlayer.hasNoGravity()) {
-            final EntityOtherPlayerMP fakePlayer4 = this.fakePlayer;
-            fakePlayer4.motionY -= 0.02;
-        }
-        if (this.fakePlayer.collidedHorizontally && this.fakePlayer.isOffsetPositionInLiquid(this.fakePlayer.motionX, this.fakePlayer.motionY + 0.6000000238418579 - this.fakePlayer.posY + d0, this.fakePlayer.motionZ)) {
-            this.fakePlayer.motionY = 0.30000001192092896;
-        }
-    }
-
-    @Override
-    public void onDisable() {
-        if (this.fakePlayer != null && FakePlayer.mc.world != null) {
-            FakePlayer.mc.world.removeEntityFromWorld(-7777);
-            Command.sendMessage(ChatFormatting.GREEN + "Despawned fakeplayer");
-            this.fakePlayer = null;
-        }
-    }
-
-    private void fakePop(final Entity entity) {
-        if (this.totemPopParticle.getValue()) {
-            FakePlayer.mc.effectRenderer.emitParticleAtEntity(entity, EnumParticleTypes.TOTEM, 30);
-        }
-        if (this.totemPopSound.getValue()) {
-            FakePlayer.mc.world.playSound(entity.posX, entity.posY, entity.posZ, SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0f, 1.0f, false);
-        }
-    }
-
-    static {
-        FakePlayer.INSTANCE = new FakePlayer();
-    }
-
-    public enum Type
-    {
-        CHASE,
-        STATIC;
-    }
+    boolean wasRecording;
+    protected final List<PositionforFPUtil> positions = new ArrayList<>();
+    int index = 0;
+    private int ticks;
 }
