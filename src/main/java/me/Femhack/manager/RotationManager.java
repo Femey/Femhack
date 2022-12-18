@@ -5,6 +5,7 @@ import me.Femhack.util.RotationUtil;
 import me.Femhack.features.Feature;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class RotationManager
@@ -32,6 +33,21 @@ public class RotationManager
     public void setPlayerYaw(float yaw) {
         RotationManager.mc.player.rotationYaw = yaw;
         RotationManager.mc.player.rotationYawHead = yaw;
+    }
+
+    public static float[] calculateAngle(Vec3d vec3d, Vec3d vec3d2) {
+        double d = vec3d2.x - vec3d.x;
+        double d2 = (vec3d2.y - vec3d.y) * -1.0;
+        double d3 = vec3d2.z - vec3d.z;
+        double d4 = MathHelper.sqrt((double)(d * d + d3 * d3));
+        float f = (float)MathHelper.wrapDegrees((double)(Math.toDegrees(Math.atan2(d3, d)) - 90.0));
+        float f2 = (float)MathHelper.wrapDegrees((double)Math.toDegrees(Math.atan2(d2, d4)));
+        if (f2 > 90.0f) {
+            f2 = 90.0f;
+        } else if (f2 < -90.0f) {
+            f2 = -90.0f;
+        }
+        return new float[]{f, f2};
     }
 
     public void lookAtPos(BlockPos pos) {

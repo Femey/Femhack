@@ -129,6 +129,18 @@ public class RenderUtil
         Gui.drawRect((int)x, (int)y, (int)(x + w), (int)(y + h), (int)color);
     }
 
+    public static void drawTextWhite(AxisAlignedBB axisAlignedBB, String string) {
+        if (axisAlignedBB == null || string == null) {
+            return;
+        }
+        GlStateManager.pushMatrix();
+        RenderUtil.glBillboardDistanceScaled((float)axisAlignedBB.minX + 0.5f, (float)axisAlignedBB.minY + 0.5f, (float)axisAlignedBB.minZ + 0.5f, (EntityPlayer)RenderUtil.mc.player, 1.0f);
+        GlStateManager.disableDepth();
+        GlStateManager.translate((double)(-((double)Femhack.textManager.getStringWidth(string) / 2.0)), (double)0.0, (double)0.0);
+        Femhack.textManager.drawStringWithShadow(string, 0.0f, 0.0f, ColorUtil.toRGBA(255, 255, 255, 255));
+        GlStateManager.popMatrix();
+    }
+
     public static void drawWaypointImage(BlockPos pos, GLUProjection.Projection projection, Color color, String name, boolean rectangle, Color rectangleColor) {
         GlStateManager.pushMatrix();
         GlStateManager.translate((double)projection.getX(), (double)projection.getY(), (double)0.0);

@@ -10,7 +10,6 @@ Version 1.5 :3
 
 * Notifications
 * Superherofx
-* ElytraFly
 * Motionblur?
 
 # Approvals

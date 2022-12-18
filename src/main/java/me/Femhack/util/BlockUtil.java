@@ -67,6 +67,18 @@ public class BlockUtil
         return EnumFacing.UP;
     }
 
+    public static boolean validObi(BlockPos blockPos) {
+        return !(BlockUtil.validBedrock(blockPos) || BlockUtil.mc.world.getBlockState(blockPos.add(0, -1, 0)).getBlock() != Blocks.OBSIDIAN && BlockUtil.mc.world.getBlockState(blockPos.add(0, -1, 0)).getBlock() != Blocks.BEDROCK || BlockUtil.mc.world.getBlockState(blockPos.add(1, 0, 0)).getBlock() != Blocks.OBSIDIAN && BlockUtil.mc.world.getBlockState(blockPos.add(1, 0, 0)).getBlock() != Blocks.BEDROCK || BlockUtil.mc.world.getBlockState(blockPos.add(-1, 0, 0)).getBlock() != Blocks.OBSIDIAN && BlockUtil.mc.world.getBlockState(blockPos.add(-1, 0, 0)).getBlock() != Blocks.BEDROCK || BlockUtil.mc.world.getBlockState(blockPos.add(0, 0, 1)).getBlock() != Blocks.OBSIDIAN && BlockUtil.mc.world.getBlockState(blockPos.add(0, 0, 1)).getBlock() != Blocks.BEDROCK || BlockUtil.mc.world.getBlockState(blockPos.add(0, 0, -1)).getBlock() != Blocks.OBSIDIAN && BlockUtil.mc.world.getBlockState(blockPos.add(0, 0, -1)).getBlock() != Blocks.BEDROCK || BlockUtil.mc.world.getBlockState(blockPos).getMaterial() != Material.AIR || BlockUtil.mc.world.getBlockState(blockPos.add(0, 1, 0)).getMaterial() != Material.AIR || BlockUtil.mc.world.getBlockState(blockPos.add(0, 2, 0)).getMaterial() != Material.AIR);
+    }
+
+    public static boolean validBedrock(BlockPos blockPos) {
+        return BlockUtil.mc.world.getBlockState(blockPos.add(0, -1, 0)).getBlock() == Blocks.BEDROCK && BlockUtil.mc.world.getBlockState(blockPos.add(1, 0, 0)).getBlock() == Blocks.BEDROCK && BlockUtil.mc.world.getBlockState(blockPos.add(-1, 0, 0)).getBlock() == Blocks.BEDROCK && BlockUtil.mc.world.getBlockState(blockPos.add(0, 0, 1)).getBlock() == Blocks.BEDROCK && BlockUtil.mc.world.getBlockState(blockPos.add(0, 0, -1)).getBlock() == Blocks.BEDROCK && BlockUtil.mc.world.getBlockState(blockPos).getMaterial() == Material.AIR && BlockUtil.mc.world.getBlockState(blockPos.add(0, 1, 0)).getMaterial() == Material.AIR && BlockUtil.mc.world.getBlockState(blockPos.add(0, 2, 0)).getMaterial() == Material.AIR;
+    }
+
+    public static boolean isHole(BlockPos blockPos) {
+        return BlockUtil.validObi(blockPos) || BlockUtil.validBedrock(blockPos);
+    }
+
     public static List<EnumFacing> getPossibleSides(BlockPos pos) {
         ArrayList<EnumFacing> facings = new ArrayList<EnumFacing>();
         if (BlockUtil.mc.world == null || pos == null) {

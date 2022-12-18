@@ -26,6 +26,17 @@ public class ColorUtil {
         return Color.getHSBColor((float) ((rainbowState %= 360.0) / 360.0), ClickGui.getInstance().rainbowSaturation.getValue().floatValue() / 255.0f, ClickGui.getInstance().rainbowBrightness.getValue().floatValue() / 255.0f);
     }
 
+    public static Color invert(Color color) {
+        int n;
+        int n2;
+        int n3 = color.getAlpha();
+        int n4 = 255 - color.getRed();
+        if (n4 + (n2 = 255 - color.getGreen()) + (n = 255 - color.getBlue()) > 740 || n4 + n2 + n < 20) {
+            return new Color(255, 255, 40, n3);
+        }
+        return new Color(n4, n2, n, n3);
+    }
+
     public static int toRGBA(float[] colors) {
         if (colors.length != 4) {
             throw new IllegalArgumentException("colors[] must have a length of 4!");
