@@ -165,7 +165,6 @@ public class FemboyAura
     private final /* synthetic */ Setting<Float> depletion;
     public final /* synthetic */ ConcurrentHashMap<Integer, Long> breakLocations;
     private /* synthetic */ boolean foundDoublePop;
-    public /* synthetic */ Setting<Boolean> text;
     public final /* synthetic */ Map<EntityPlayer, Timer> totemPops;
     public final /* synthetic */ Timer inhibitTimer;
     public /* synthetic */ Setting<ACAntiWeakness> antiWeakness;
@@ -837,7 +836,7 @@ public class FemboyAura
                 return;
             }
             try {
-                RenderUtil.drawBoxESP(this.renderBlock, color, false, color2, this.lineWidth.getValue(), true, true, this.bAlpha.getValue(), false);
+                RenderUtil.drawBoxESP(this.renderBlock, color, true, color2, this.lineWidth.getValue(), true, true, this.bAlpha.getValue(), false);
             }
             catch (Exception ex2) {}
         }
@@ -851,7 +850,7 @@ public class FemboyAura
             }
             BlockRenderUtil.prepareGL();
             try {
-                RenderUtil.drawBoxESP(this.renderBlock, color, false, color2, this.lineWidth.getValue(), true, true, this.bAlpha.getValue(), false);
+                RenderUtil.drawBoxESP(this.renderBlock, color, true, color2, this.lineWidth.getValue(), true, true, this.bAlpha.getValue(), false);
             }
             catch (Exception ex4) {}
             BlockRenderUtil.releaseGL();
@@ -868,7 +867,7 @@ public class FemboyAura
             final double y = this.renderTarget.lastTickPosY + (this.renderTarget.posY - this.renderTarget.lastTickPosY) * event.getPartialTicks() - renderManager.getRenderPosY();
             final double z = this.renderTarget.lastTickPosZ + (this.renderTarget.posZ - this.renderTarget.lastTickPosZ) * event.getPartialTicks() - renderManager.getRenderPosZ();
             final double height = -Math.cos(System.currentTimeMillis() / 1000.0) * (this.renderTarget.height / 2.0) + this.renderTarget.height / 2.0;
-            GL11.glLineWidth((float)2.5f);
+            GL11.glLineWidth((float)3f);
             GL11.glBegin(1);
             for (int i = 0; i <= 360; ++i) {
                 final Vec3d vec = new Vec3d(x + Math.sin(i * 3.141592653589793 / 180.0) * 0.5, y + height + 0.01, z + Math.cos(i * 3.141592653589793 / 180.0) * 0.5);
@@ -1103,7 +1102,6 @@ public class FemboyAura
         this.oBlue = this.register(new Setting<Object>("OutlineBlue", Integer.valueOf(145), Integer.valueOf(0), Integer.valueOf(255), object -> this.outline.getValue() != false && this.setting.getValue() == Pages.Render));
         this.oAlpha = this.register(new Setting<Object>("OutlineAlpha", Integer.valueOf(111), Integer.valueOf(0), Integer.valueOf(255), object -> this.outline.getValue() != false && this.setting.getValue() == Pages.Render));
         this.lineWidth = this.register(new Setting<Object>("LineWidth", Float.valueOf(1.8f), Float.valueOf(0.1f), Float.valueOf(5.0f), object -> this.outline.getValue() != false && this.setting.getValue() == Pages.Render));
-        this.text = this.register(new Setting<Object>("RenderDmg", Boolean.valueOf(true), object -> this.setting.getValue() == Pages.Render));
         this.debugG = this.register(new Setting<Boolean>("Debug", Boolean.valueOf(false), bl -> this.setting.getValue() == Pages.Development));
         this.handleSequential1 = this.register(new Setting<Boolean>("handleSequential", Boolean.valueOf(false), bl -> this.debugG.getValue() != false && this.setting.getValue() == Pages.Development));
         this.breakCrystal1 = this.register(new Setting<Boolean>("breakcrystal", Boolean.valueOf(false), bl -> this.debugG.getValue() != false && this.setting.getValue() == Pages.Development));
