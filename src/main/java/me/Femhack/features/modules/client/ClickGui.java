@@ -43,10 +43,10 @@ public class ClickGui
     public Setting<Integer> imageHeight = this.register(new Setting<Object>("ImageHeight", Integer.valueOf(100), Integer.valueOf(0), Integer.valueOf(1000), v -> this.imageLogo.getValue()));
     public Setting<Mode> particleMode = this.register(new Setting<Object>("Particle", Mode.Normal));
     public Setting<Integer> pSpeed = this.register(new Setting<Object>("Particle Speed", 8, 1, 15, v -> this.particleMode.getValue() == Mode.Normal));
-    public Setting<Float> pRed = this.register(new Setting<Float>("Particle Red", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
-    public Setting<Float> pGreen = this.register(new Setting<Float>("Particle Green", 0f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
-    public Setting<Float> pBlue = this.register(new Setting<Float>("Particle Blue", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
-    public Setting<Float> pAlpha = this.register(new Setting<Float>("Particle Alpha", 255f, 0f, 255f, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Integer> pRed = this.register(new Setting<Integer>("Particle Red", 255, 0, 255, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Integer> pGreen = this.register(new Setting<Integer>("Particle Green", 0, 0, 255, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Integer> pBlue = this.register(new Setting<Integer>("Particle Blue", 255, 0, 255, v -> this.particleMode.getValue() == Mode.Normal));
+    public Setting<Integer> pAlpha = this.register(new Setting<Integer>("Particle Alpha", 255, 0, 255, v -> this.particleMode.getValue() == Mode.Normal));
 
     private FemhackGui click;
 
