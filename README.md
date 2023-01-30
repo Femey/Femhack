@@ -9,7 +9,6 @@ Version 1.7 :3
 # Thingys i gotta work on >w<
 
 * Notifications
-* Superherofx
 * Motionblur?
 
 # Approvals
