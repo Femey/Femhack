@@ -9,6 +9,9 @@ public class ViewModel extends Module
 {
     private static ViewModel INSTANCE;
     public Setting<Settings> settings = this.register(new Setting("Settings", Settings.TRANSLATE));
+
+    public Setting<Boolean> useAlpha = this.register(new Setting("Use Opacity", false, v -> this.settings.getValue() == Settings.TWEAKS));
+    public Setting<Integer> alpha = this.register(new Setting("Opacity", 255, 0, 255, v -> this.settings.getValue() == Settings.TWEAKS && useAlpha.getValue()));
     public Setting<Boolean> noEatAnimation = this.register(new Setting("NoEatAnimation", false, v -> this.settings.getValue() == Settings.TWEAKS));
     public Setting<Double> eatX = this.register(new Setting("EatX", 1.0, (-2.0), 5.0, v -> this.settings.getValue() == Settings.TWEAKS && !this.noEatAnimation.getValue()));
     public Setting<Double> eatY = this.register(new Setting("EatY", 1.0, (-2.0), 5.0, v -> this.settings.getValue() == Settings.TWEAKS && !this.noEatAnimation.getValue()));

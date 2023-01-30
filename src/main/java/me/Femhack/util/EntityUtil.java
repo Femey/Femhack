@@ -1,9 +1,22 @@
 package me.Femhack.util;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import me.Femhack.Femhack;
-import me.Femhack.mixin.mixins.accessors.IEntityLivingBase;
-import net.minecraft.block.*;
+import java.awt.Color;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
+import net.minecraft.block.BlockDeadBush;
+import net.minecraft.block.BlockFire;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockSnow;
+import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -36,13 +49,11 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+
+import me.Femhack.Femhack;
+import me.Femhack.mixin.mixins.accessors.IEntityLivingBase;
 import net.minecraft.network.Packet;
 
-import java.awt.*;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.*;
 
 public class EntityUtil
         implements Util {

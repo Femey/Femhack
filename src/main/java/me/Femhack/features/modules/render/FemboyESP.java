@@ -28,12 +28,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class FemboyESP extends Module
 {
     private final Setting<CachedImage> imageUrl;
     private final Setting<Boolean> noRenderPlayers = this.register(new Setting<Boolean>("NoRenderPlayers", false));
-    private final Setting<Boolean> reload = this.register(new Setting<Boolean>("ReloadTexture", false));
     private ResourceLocation femboy;
     private ICamera camera;
 
@@ -49,6 +49,9 @@ public class FemboyESP extends Module
     @Override
     public void onEnable() {
         FemboyESP.EVENT_BUS.register((Object)this);
+        Command.sendMessage("Toggle on and off to reload the image");
+        this.femboy = null;
+        this.onLoad();
     }
 
     @Override
@@ -63,14 +66,6 @@ public class FemboyESP extends Module
         catch (IOException ex) {
             ex.printStackTrace();
             return null;
-        }
-    }
-
-    @Override
-    public void onUpdate() {
-        if (this.reload.getValue()) {
-            this.femboy = null;
-            this.onLoad();
         }
     }
 

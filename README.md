@@ -8,9 +8,6 @@ Version 1.7 :3
 
 # Thingys i gotta work on >w<
 
-* opacity on viewmodle
-* fix cev breaker
-* make femboyesp easier to use
 * auto hole fill
 
 # Approvals
