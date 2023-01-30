@@ -8,7 +8,9 @@ Version 1.7 :3
 
 # Thingys i gotta work on >w<
 
-* ideas for shit
+* opacity on viewmodle
+* fix cev breaker
+* make femboyesp easier to use
 
 # Approvals
 
