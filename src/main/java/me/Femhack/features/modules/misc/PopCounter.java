@@ -1,8 +1,10 @@
 package me.Femhack.features.modules.misc;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.Femhack.features.command.Command;
 import me.Femhack.features.modules.Module;
+import me.Femhack.features.setting.Setting;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.HashMap;
@@ -16,6 +18,8 @@ public class PopCounter
         super("PopCounter", "Counts other players totem pops.", Module.Category.MISC, true, false, false);
         this.setInstance();
     }
+
+    Setting<Boolean> self = this.register(new Setting<Boolean>("Self Pops", true));
 
     public static PopCounter getInstance() {
         if (INSTANCE == null) {
@@ -49,9 +53,13 @@ public class PopCounter
         if (PopCounter.fullNullCheck()) {
             return;
         }
-        if (PopCounter.mc.player.equals(player)) {
-            return;
+
+        if (!self.getValue()){
+            if (PopCounter.mc.player.equals(player)) {
+                return;
+            }
         }
+
         int l_Count = 1;
         if (TotemPopContainer.containsKey(player.getName())) {
             l_Count = TotemPopContainer.get(player.getName());
