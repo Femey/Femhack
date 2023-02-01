@@ -34,10 +34,8 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.init.Items;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+
 import java.util.Collection;
 
 
@@ -54,6 +52,15 @@ public class BlockUtil
         return positions;
     }
 
+    public static boolean isIntercepted(BlockPos blockPos) {
+        for (Entity entity : BlockUtil.mc.world.loadedEntityList) {
+            BlockPos blockPos2 = blockPos;
+            if (entity instanceof EntityItem || entity instanceof EntityEnderCrystal || !new AxisAlignedBB(blockPos2).intersects(entity.getEntityBoundingBox())) continue;
+            return true;
+        }
+        return false;
+    }
+
     public static EnumFacing getFacing(BlockPos pos) {
         for (EnumFacing facing : EnumFacing.values()) {
             RayTraceResult rayTraceResult = BlockUtil.mc.world.rayTraceBlocks(new Vec3d(BlockUtil.mc.player.posX, BlockUtil.mc.player.posY + (double) BlockUtil.mc.player.getEyeHeight(), BlockUtil.mc.player.posZ), new Vec3d((double) pos.getX() + 0.5 + (double) facing.getDirectionVec().getX() * 1.0 / 2.0, (double) pos.getY() + 0.5 + (double) facing.getDirectionVec().getY() * 1.0 / 2.0, (double) pos.getZ() + 0.5 + (double) facing.getDirectionVec().getZ() * 1.0 / 2.0), false, true, false);
@@ -65,6 +72,36 @@ public class BlockUtil
             return EnumFacing.DOWN;
         }
         return EnumFacing.UP;
+    }
+
+    public static void placeBlockss(BlockPos blockPos, boolean bl, boolean bl2, boolean bl3) {
+        for (EnumFacing enumFacing : EnumFacing.values()) {
+            boolean bl4 = bl;
+            boolean bl5 = bl2;
+            boolean bl6 = bl3;
+            BlockPos blockPos2 = blockPos;
+            if (BlockUtil.mc.world.getBlockState(blockPos2.offset(enumFacing)).getBlock().equals((Object)Blocks.AIR) || BlockUtil.isIntercepted(blockPos2)) continue;
+            if (bl5) {
+                BlockUtil.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItemOnBlock(blockPos2.offset(enumFacing), enumFacing.getOpposite(), EnumHand.MAIN_HAND, Float.intBitsToFloat(Float.floatToIntBits(2.7f)), Float.intBitsToFloat(Float.floatToIntBits(3.8f)), Float.intBitsToFloat(Float.floatToIntBits(30.0f))));
+            } else {
+                BlockUtil.mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, blockPos2.offset(enumFacing), enumFacing.getOpposite(), new Vec3d((Vec3i)blockPos2), EnumHand.MAIN_HAND);
+            }
+            if (bl4) {
+                BlockUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
+            }
+            if (bl6) {
+                RotationUtil.faceVector(new Vec3d((Vec3i)blockPos2), true);
+            }
+            return;
+        }
+    }
+
+    public static boolean isInterceptedByOther(BlockPos blockPos) {
+        for (Entity entity : BlockUtil.mc.world.loadedEntityList) {
+            if (entity.equals((Object)BlockUtil.mc.player) || !new AxisAlignedBB(blockPos).intersects(entity.getEntityBoundingBox())) continue;
+            return true;
+        }
+        return false;
     }
 
     public static boolean validObi(BlockPos blockPos) {

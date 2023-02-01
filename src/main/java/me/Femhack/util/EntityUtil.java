@@ -4,12 +4,8 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import java.awt.Color;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockDeadBush;
@@ -76,6 +72,58 @@ public class EntityUtil
             EntityUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
         }
     }
+
+    public static EntityLivingBase getTarget(boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, double d, int n) {
+        EntityLivingBase entityLivingBase = null;
+        if (n == 0) {
+            entityLivingBase = (EntityLivingBase) EntityUtil.mc.world.loadedEntityList.stream().filter(entity -> EntityUtil.isValid(entity, bl, bl2, bl3, bl4, bl5, d)).min(Comparator.comparing(entity -> EntityUtil.mc.player.getPositionVector().squareDistanceTo(entity.getPositionVector()))).orElse(null);
+        } else if (n == 1) {
+            entityLivingBase = EntityUtil.mc.world.loadedEntityList.stream().filter(entity -> EntityUtil.isValid(entity, bl, bl2, bl3, bl4, bl5, d)).map(entity -> (EntityLivingBase)entity).min(Comparator.comparing(EntityLivingBase::getHealth)).orElse(null);
+        } else if (n == 2) {
+            entityLivingBase = EntityUtil.mc.world.loadedEntityList.stream().filter(entity -> EntityUtil.isValid(entity, bl, bl2, bl3, bl4, bl5, d)).map(entity -> (EntityLivingBase)entity).max(Comparator.comparing(EntityLivingBase::getHealth)).orElse(null);
+        }
+        return entityLivingBase;
+    }
+
+    public static BlockPos getEntityPosFloored(Entity entity) {
+        return new BlockPos(Math.floor(entity.posX), Math.floor(entity.posY), Math.floor(entity.posZ));
+    }
+
+    private static boolean isValid(Entity entity, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, double d) {
+        if (entity.isDead) {
+            return false;
+        }
+        if (entity instanceof EntityLivingBase && entity != EntityUtil.mc.player && entity.getDistanceSq((Entity)EntityUtil.mc.player) <= d * d) {
+            if (entity instanceof EntityPlayer && bl) {
+                if (!bl3) {
+                    return !Femhack.friendManager.isFriend((EntityPlayer)entity);
+                }
+                return true;
+            }
+            if (EntityUtil.isHostileMob(entity) && bl4) {
+                return true;
+            }
+            if (EntityUtil.isNeutralMob(entity) && bl2) {
+                return true;
+            }
+            return EntityUtil.isPassive(entity) && bl5;
+        }
+        return false;
+    }
+
+    public static int toMode(String string) {
+        if (string.equalsIgnoreCase("Closest")) {
+            return 0;
+        }
+        if (string.equalsIgnoreCase("Lowest Health")) {
+            return 1;
+        }
+        if (string.equalsIgnoreCase("Highest Health")) {
+            return 2;
+        }
+        throw new IllegalArgumentException(string);
+    }
+
 
     public static Vec3d interpolateEntity(Entity entity, float time) {
         return new Vec3d(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) time, entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) time, entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) time);

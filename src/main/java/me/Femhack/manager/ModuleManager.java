@@ -39,6 +39,7 @@ public class ModuleManager
 
     public void init() {
         this.modules.add(new ClickGui());
+        this.modules.add(new AutoHoleFill());
         this.modules.add(new ElytraFly());
         this.modules.add(new FemboyAura());
         this.modules.add(new PopChams());
