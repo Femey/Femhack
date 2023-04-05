@@ -4,7 +4,7 @@ Hai qts <3
 
 Hack for feminine boys uwu
 
-Version 1.8 :3
+Version 1.9 :3
 
 # Thingys i gotta work on >w<
 

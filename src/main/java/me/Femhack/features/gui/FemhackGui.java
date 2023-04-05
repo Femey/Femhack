@@ -8,6 +8,7 @@ import me.Femhack.features.gui.components.items.Item;
 import me.Femhack.features.gui.components.items.buttons.ModuleButton;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.modules.client.ClickGui;
+import me.Femhack.util.ColorUtil;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
