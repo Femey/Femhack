@@ -14,12 +14,21 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
 
 @Mixin(value={RenderItem.class})
 public abstract class MixinRenderItem {
+
+    @Shadow private void renderEffect(IBakedModel model) {}
+
+    @ModifyArg(method={"renderEffect"}, at=@At(value="INVOKE", target="net/minecraft/client/renderer/RenderItem.renderModel(Lnet/minecraft/client/renderer/block/model/IBakedModel;I)V"))
+    private int renderEffect(int glintVal) {
+        return ViewModel.getInstance().isEnabled() && ViewModel.getInstance().useAlpha.getValue() ? new Color(255, 255, 255, ViewModel.getInstance().alpha.getValue()).getRGB() : glintVal;
+    }
+
     @Shadow private void renderModel(IBakedModel model, int color, ItemStack stack) {}
     @Inject(method = { "renderItemModel" }, at = { @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderItem;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;)V", shift = At.Shift.BEFORE) })
     private void renderItemModel(final ItemStack stack, final IBakedModel bakedModel, final ItemCameraTransforms.TransformType transform, final boolean leftHanded, final CallbackInfo ci) {
@@ -51,6 +60,11 @@ public abstract class MixinRenderItem {
                 stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
             } else {
                 renderModel(model, ViewModel.getInstance().isEnabled() && ViewModel.getInstance().useAlpha.getValue() ? new Color(255, 255, 255, ViewModel.getInstance().alpha.getValue()).getRGB() : -1, stack);
+                if (ViewModel.getInstance().isEnabled() && ViewModel.getInstance().glint.getValue().booleanValue() == false){
+
+                } else if (stack.hasEffect()) {
+                    renderEffect(model);
+                }
             }
 
             GlStateManager.popMatrix();
