@@ -4,7 +4,7 @@ Hai qts <3
 
 Hack for feminine boys uwu
 
-Version 1.9 :3
+Version 2.0 :3
 
 Im back!!
 

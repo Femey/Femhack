@@ -124,28 +124,6 @@ public class RenderUtil
         GLUProjection.getInstance().updateMatrices(viewport, modelView, projection, (float)res.getScaledWidth() / (float)Minecraft.getMinecraft().displayWidth, (float)res.getScaledHeight() / (float)Minecraft.getMinecraft().displayHeight);
     }
 
-    public static void drawRectGradient(float x, float y, float width, float height, Color topLeft, Color bottomLeft, Color bottomRight, Color topRight) {
-        GlStateManager.pushMatrix();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableAlpha();
-        GlStateManager.blendFunc((GlStateManager.SourceFactor)GlStateManager.SourceFactor.SRC_ALPHA, (GlStateManager.DestFactor)GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        GlStateManager.shadeModel((int)7425);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        bufferBuilder.pos(x, y, 0.0).color((float)topLeft.getRed() / 255.0f, (float)topLeft.getGreen() / 255.0f, (float)topLeft.getBlue() / 255.0f, (float)topLeft.getAlpha() / 255.0f).endVertex();
-        bufferBuilder.pos(x, y + height, 0.0).color((float)bottomLeft.getRed() / 255.0f, (float)bottomLeft.getGreen() / 255.0f, (float)bottomLeft.getBlue() / 255.0f, (float)bottomLeft.getAlpha() / 255.0f).endVertex();
-        bufferBuilder.pos(x + width, y + height, 0.0).color((float)bottomRight.getRed() / 255.0f, (float)bottomRight.getGreen() / 255.0f, (float)bottomRight.getBlue() / 255.0f, (float)bottomRight.getAlpha() / 255.0f).endVertex();
-        bufferBuilder.pos(x + width, y, 0.0).color((float)topRight.getRed() / 255.0f, (float)topRight.getGreen() / 255.0f, (float)topRight.getBlue() / 255.0f, (float)topRight.getAlpha() / 255.0f).endVertex();
-        tessellator.draw();
-        GlStateManager.shadeModel((int)7424);
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
-        GlStateManager.popMatrix();
-    }
-
     public static void drawRectangleCorrectly(int x, int y, int w, int h, int color) {
         GL11.glLineWidth((float)1.0f);
         Gui.drawRect((int)x, (int)y, (int)(x + w), (int)(y + h), (int)color);

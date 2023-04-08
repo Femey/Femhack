@@ -55,9 +55,9 @@ public class Component
         counter1 = new int[]{1};
         float totalItemHeight = this.open ? this.getTotalItemHeight() - 2.0f : 0.0f;
         int color = ColorUtil.toARGB(ClickGui.getInstance().topRed.getValue(), ClickGui.getInstance().topGreen.getValue(), ClickGui.getInstance().topBlue.getValue(), 255);
-        Gui.drawRect(this.x, (int) (this.y + 0.5F), this.x + this.width, (int) (this.y + this.height - 3.5F), ClickGui.getInstance().rainbow.getValue() != false ? ColorUtil.rainbow(ClickGui.getInstance().rainbowHue.getValue()).getRGB() : color);
+        Gui.drawRect(this.x, (this.y), this.x + this.width, (int) (this.y + this.height - 3.5F), ClickGui.getInstance().rainbow.getValue() != false ? ColorUtil.rainbow(ClickGui.getInstance().rainbowHue.getValue()).getRGB() : color);
         if (this.open) {
-            RenderUtil.drawRect(this.x, (float) this.y + 12.5f, this.x + this.width, (float) (this.y + this.height) + totalItemHeight, 0x77000000);
+            RenderUtil.drawRect(this.x, (float) this.y + 14.5f, this.x + this.width, (this.y + this.height) + totalItemHeight, 0x77000000);
         }
 
         if (this.open) {
@@ -65,7 +65,7 @@ public class Component
             RenderUtil.drawLine(x-0.5f + width, y, x-0.5f + width, y+6 + totalItemHeight + 11.5f, 1.5f, color); //right line
             RenderUtil.drawLine(x, y+6 + totalItemHeight + 11, x + width, y+6 + totalItemHeight+11, 1.5f, color); //Bottom line
         }
-        Femhack.textManager.drawStringWithShadow(this.getName(), (float) this.x + 3.0f, (float) this.y - 4.0f - (float) FemhackGui.getClickGui().getTextOffset(), -1);
+        Femhack.textManager.drawStringWithShadow(this.getName(), (float) this.x + 3.0f, (float) this.y - 2.0f - (float) FemhackGui.getClickGui().getTextOffset(), -1);
 
 
         GlStateManager.pushMatrix();

@@ -35,22 +35,20 @@ public class Description
     }
 
     public static void deez(String desc, int color){
-        Femhack.textManager.drawStringWithShadow(desc, descX + 3.0f, descY + 7.0f, color);
-        Description.descW = Femhack.textManager.getStringWidth(desc) + 6f;
+        if (open) {
+            Femhack.textManager.drawStringWithShadow(desc, descX + 3.0f, descY + 7.0f, color);
+            Description.descW = Femhack.textManager.getStringWidth(desc) + 6f;
+        }
     }
 
     public void drawScreen(int mouseX, int mouseY) {
         this.drag(mouseX, mouseY);
-        int tRed = 0;
-        int tBlue = 0;
-        int tGreen = 0;
-        Color tColor = new Color(tRed, tGreen, tBlue, 119);
         int color2 = ColorUtil.toARGB(ClickGui.getInstance().topRed.getValue(), ClickGui.getInstance().topGreen.getValue(), ClickGui.getInstance().topBlue.getValue(), 255);
         if (open) {
-            RenderUtil.drawRectGradient(descX, descY - 4.0f, descW, descH, tColor, tColor, tColor, tColor);
-            RenderUtil.drawLine(descX+0.5f, descY - 3, descX+0.5f, descY+descH - 3, 1.5f, color2); //left line
-            RenderUtil.drawLine(descX-0.5f + descW, descY - 3 , descX-0.5f + descW, descY+descH - 3, 1.5f, color2); //right line
-            RenderUtil.drawLine(descX, descY + descH - 3, descX + descW, descY + descH - 3, 1.5f, color2); //Bottom line
+            RenderUtil.drawRect(descX, descY - 4.0f, descW, descH, ColorUtil.toRGBA(0,0,0,119));
+            RenderUtil.drawLine(descX+0.5f, descY - 3, descX+0.5f, descY+descH, 1.5f, color2); //left line
+            RenderUtil.drawLine(descX-0.5f + descW, descY - 3 , descX-0.5f + descW, descY+descH, 1.5f, color2); //right line
+            RenderUtil.drawLine(descX, descY + descH, descX + descW, descY + descH, 1.5f, color2); //Bottom line
         }
         Gui.drawRect((int)((int)descX), (int)((int)descY - 17), (int)((int)descX + descW), (int)((int)descY - 3), (int)(ClickGui.getInstance().rainbow.getValue() != false ? ColorUtil.rainbow(ClickGui.getInstance().rainbowHue.getValue()).getRGB() : color2));
         Femhack.textManager.drawStringWithShadow("Description", descX + 3.0f, descY - 14.0f, -1);
