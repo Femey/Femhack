@@ -856,7 +856,6 @@ public class FemboyAura
             BlockRenderUtil.releaseGL();
             GlStateManager.pushMatrix();
             BlockRenderUtil.prepareGL();
-            GlStateManager.enableDepth();
             final IRenderManager renderManager = (IRenderManager) FemboyAura.mc.getRenderManager();
             final float[] hsb = Color.RGBtoHSB(this.bRed.getValue(), this.bGreen.getValue(), this.bBlue.getValue(), null);
             float hue;
@@ -881,7 +880,6 @@ public class FemboyAura
                 GL11.glColor4f(this.bRed.getValue() / 255.0f, this.bGreen.getValue() / 255.0f, this.bBlue.getValue() / 255.0f, alpha);
                 GL11.glVertex3d(vecs.get(j).x, vecs.get(j).y, vecs.get(j).z);
                 GL11.glVertex3d(vecs.get(j + 1).x, vecs.get(j + 1).y, vecs.get(j + 1).z);
-                hue += 0.0027777778f;
                 rgb = Color.getHSBColor(hue, hsb[1], hsb[2]).getRGB();
             }
             GL11.glEnd();

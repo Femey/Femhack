@@ -47,6 +47,7 @@ public class ModuleManager
         this.modules.add(new PopChams());
         this.modules.add(new FontMod());
         this.modules.add(new ExtraTab());
+        this.modules.add(new ChorusEsp());
         this.modules.add(new Velocity());
         this.modules.add(new HUD());
         this.modules.add(new BlockHighlight());

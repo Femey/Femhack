@@ -2123,6 +2123,45 @@ public class RenderUtil
         EXTFramebufferObject.glFramebufferRenderbufferEXT((int)36160, (int)36096, (int)36161, (int)stencilDepthBufferID);
     }
 
+    public static void drawCircle(final float n, final float n2, final float n3, final float n4, final Color color) {
+        final BlockPos blockPos = new BlockPos((double)n, (double)n2, (double)n3);
+        final AxisAlignedBB axisAlignedBB = new AxisAlignedBB(blockPos.getX() - RenderUtil.mc.getRenderManager().viewerPosX, blockPos.getY() - RenderUtil.mc.getRenderManager().viewerPosY, blockPos.getZ() - RenderUtil.mc.getRenderManager().viewerPosZ, blockPos.getX() + 1 - RenderUtil.mc.getRenderManager().viewerPosX, blockPos.getY() + 1 - RenderUtil.mc.getRenderManager().viewerPosY, blockPos.getZ() + 1 - RenderUtil.mc.getRenderManager().viewerPosZ);
+        RenderUtil.camera.setPosition(Objects.requireNonNull(RenderUtil.mc.getRenderViewEntity()).posX, RenderUtil.mc.getRenderViewEntity().posY, RenderUtil.mc.getRenderViewEntity().posZ);
+        if (RenderUtil.camera.isBoundingBoxInFrustum(new AxisAlignedBB(axisAlignedBB.minX + RenderUtil.mc.getRenderManager().viewerPosX, axisAlignedBB.minY + RenderUtil.mc.getRenderManager().viewerPosY, axisAlignedBB.minZ + RenderUtil.mc.getRenderManager().viewerPosZ, axisAlignedBB.maxX + RenderUtil.mc.getRenderManager().viewerPosX, axisAlignedBB.maxY + RenderUtil.mc.getRenderManager().viewerPosY, axisAlignedBB.maxZ + RenderUtil.mc.getRenderManager().viewerPosZ))) {
+            drawCircleVertices(axisAlignedBB, n4, color);
+        }
+    }
+
+    public static void drawCircleVertices(final AxisAlignedBB axisAlignedBB, final float n, final Color color) {
+        final float n2 = color.getRed() / 255.0f;
+        final float n3 = color.getGreen() / 255.0f;
+        final float n4 = color.getBlue() / 255.0f;
+        final float n5 = color.getAlpha() / 255.0f;
+        final Tessellator getInstance = Tessellator.getInstance();
+        final BufferBuilder getBuffer = getInstance.getBuffer();
+        GlStateManager.pushMatrix();
+        GlStateManager.enableBlend();
+        GlStateManager.disableDepth();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.disableTexture2D();
+        GlStateManager.depthMask(false);
+        GL11.glEnable(2848);
+        GL11.glHint(3154, 4354);
+        GL11.glLineWidth(2.0f);
+        for (int i = 0; i < 360; ++i) {
+            getBuffer.begin(3, DefaultVertexFormats.POSITION_COLOR);
+            getBuffer.pos(axisAlignedBB.getCenter().x + Math.sin(i * 3.1415926 / 180.0) * n, axisAlignedBB.minY, axisAlignedBB.getCenter().z + Math.cos(i * 3.1415926 / 180.0) * n).color(n2, n3, n4, n5).endVertex();
+            getBuffer.pos(axisAlignedBB.getCenter().x + Math.sin((i + 1) * 3.1415926 / 180.0) * n, axisAlignedBB.minY, axisAlignedBB.getCenter().z + Math.cos((i + 1) * 3.1415926 / 180.0) * n).color(n2, n3, n4, n5).endVertex();
+            getInstance.draw();
+        }
+        GL11.glDisable(2848);
+        GlStateManager.depthMask(true);
+        GlStateManager.enableDepth();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+        GlStateManager.popMatrix();
+    }
+
     public static final class GeometryMasks {
         public static final HashMap<EnumFacing, Integer> FACEMAP = new HashMap();
 

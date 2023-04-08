@@ -17,6 +17,10 @@ public class PacketEvent
         return (T) this.packet;
     }
 
+    public PacketEvent(Packet packet) {
+        this.packet = packet;
+    }
+
     @Cancelable
     public static class Send
             extends PacketEvent {
@@ -30,6 +34,12 @@ public class PacketEvent
             extends PacketEvent {
         public Receive(int stage, Packet<?> packet) {
             super(stage, packet);
+        }
+    }
+
+    public static class Read extends PacketEvent {
+        public Read(Packet packet) {
+            super(packet);
         }
     }
 }
