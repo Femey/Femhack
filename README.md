@@ -10,7 +10,7 @@ Im back!!
 
 # Thingys i gotta work on >w<
 
-* idk...
+* kill feed
 
 # Approvals
 
