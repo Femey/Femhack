@@ -4,6 +4,7 @@ import me.Femhack.Femhack;
 import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.gui.components.Component;
 import me.Femhack.features.gui.components.items.Item;
+import me.Femhack.util.ColorUtil;
 import me.Femhack.util.RenderUtil;
 import me.Femhack.util.Util;
 import me.Femhack.features.modules.client.ClickGui;
@@ -21,8 +22,8 @@ public class Button
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width, this.y + (float) this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())) : (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
-        Femhack.textManager.drawStringWithShadow(this.getName(), this.x + 2.3f, this.y - 2.0f - (float) FemhackGui.getClickGui().getTextOffset(), this.getState() ? -1 : -5592406);
+        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width, this.y + (float) this.height - 0.5f, (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
+        Femhack.textManager.drawStringWithShadow(this.getName(), this.x + 2.3f, this.y - 2.0f - (float) FemhackGui.getClickGui().getTextOffset(), this.getState() ? ColorUtil.toARGB(ClickGui.getInstance().red.getValue(), ClickGui.getInstance().green.getValue(), ClickGui.getInstance().blue.getValue(), 255) : -5592406);
     }
 
     @Override

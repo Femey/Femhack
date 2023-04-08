@@ -25,7 +25,7 @@ public class BindButton
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         int color = ColorUtil.toARGB(ClickGui.getInstance().red.getValue(), ClickGui.getInstance().green.getValue(), ClickGui.getInstance().blue.getValue(), 255);
-        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width + 7.4f, this.y + (float) this.height - 0.5f, this.getState() ? (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515) : (!this.isHovering(mouseX, mouseY) ? Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).hoverAlpha.getValue()) : Femhack.colorManager.getColorWithAlpha(Femhack.moduleManager.getModuleByClass(ClickGui.class).alpha.getValue())));
+        RenderUtil.drawRect(this.x, this.y, this.x + (float) this.width + 7.4f, this.y + (float) this.height - 0.5f, (!this.isHovering(mouseX, mouseY) ? 0x11555555 : -2007673515));
         if (this.isListening) {
             Femhack.textManager.drawStringWithShadow("Press a Key...", this.x + 2.3f, this.y - 1.7f - (float) FemhackGui.getClickGui().getTextOffset(), -1);
         } else {

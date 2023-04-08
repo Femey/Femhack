@@ -1,51 +1,36 @@
 package me.Femhack.features.gui.components.items.buttons;
 
-import me.Femhack.Femhack;
 import me.Femhack.features.gui.FemhackGui;
 import me.Femhack.features.gui.components.Component;
+import me.Femhack.features.gui.components.items.Description;
 import me.Femhack.features.gui.components.items.Item;
 import me.Femhack.features.modules.client.ClickGui;
 import me.Femhack.util.ColorUtil;
 import me.Femhack.util.Util;
 import me.Femhack.features.modules.Module;
-import me.Femhack.features.modules.client.HUD;
 import me.Femhack.features.setting.Bind;
 import me.Femhack.features.setting.Setting;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ModuleButton
         extends Button {
     private final Module module;
-    private final ResourceLocation logo = new ResourceLocation("textures/uwu.png");
     private List<Item> items = new ArrayList<Item>();
     private boolean subOpen;
+    private float progress;
 
     public ModuleButton(Module module) {
         super(module.getName());
         this.module = module;
         this.initSettings();
-    }
-
-    public static void drawCompleteImage(float posX, float posY, int width, int height) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(posX, posY, 0.0f);
-        GL11.glBegin(7);
-        GL11.glTexCoord2f(0.0f, 0.0f);
-        GL11.glVertex3f(0.0f, 0.0f, 0.0f);
-        GL11.glTexCoord2f(0.0f, 1.0f);
-        GL11.glVertex3f(0.0f, (float) height, 0.0f);
-        GL11.glTexCoord2f(1.0f, 1.0f);
-        GL11.glVertex3f((float) width, (float) height, 0.0f);
-        GL11.glTexCoord2f(1.0f, 0.0f);
-        GL11.glVertex3f((float) width, 0.0f, 0.0f);
-        GL11.glEnd();
-        GL11.glPopMatrix();
     }
 
     public void initSettings() {
@@ -73,16 +58,11 @@ public class ModuleButton
         this.items = newItems;
     }
 
-
-
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        float tempx;
         super.drawScreen(mouseX, mouseY, partialTicks);
         if (!this.items.isEmpty()) {
-            if (HUD.getInstance().gear.getValue().booleanValue()) {
-                Util.mc.getTextureManager().bindTexture(this.logo);
-                ModuleButton.drawCompleteImage(this.x - 1.5f + (float) this.width - 7.4f, this.y - 2.2f - (float) FemhackGui.getClickGui().getTextOffset(), 8, 8);
-            }
             if (this.subOpen) {
                 float height = 1.0f;
                 for (Item item : this.items) {
@@ -97,6 +77,41 @@ public class ModuleButton
                 }
             }
         }
+        if (this.getModule(mouseX, mouseY) != null && Description.open) {
+            String s = this.getDescription(this.getModule(mouseX, mouseY));
+            int color = ColorUtil.toARGB(ClickGui.getInstance().topRed.getValue(), ClickGui.getInstance().topGreen.getValue(), ClickGui.getInstance().topBlue.getValue(), 255);
+            Description.deez(s, color);
+        }
+        if (ClickGui.getInstance().arrow.getValue()) {
+            if (!this.subOpen) {
+                tempx = 0;
+                progress = 0;
+            } else {
+                progress = 90;
+                tempx = 6.5F;
+            }
+            //gear bit
+            GlStateManager.pushMatrix();
+            GlStateManager.enableBlend();
+            GlStateManager.color(197, 182, 179);
+            mc.getTextureManager().bindTexture(new ResourceLocation("textures/arrow.png"));
+            GlStateManager.translate(this.x + this.width - 8.5F, this.y - FemhackGui.getClickGui().getTextOffset() - 2, 0.0F);
+            GlStateManager.rotate(progress, 0.0F, 0.0F, 1.0F);
+            Gui.drawScaledCustomSizeModalRect(-5, (int) (-5 - tempx), 0.0F, 0.0F, 16, 16, 16, 16, 16.0F, 16.0F);
+            GlStateManager.disableBlend();
+            GlStateManager.popMatrix();
+        }
+    }
+
+    public String getDescription(Module module) {
+        return module.getDescription();
+    }
+
+    public Module getModule(int mouseX, int mouseY) {
+        if (this.isHovering(mouseX, mouseY)) {
+            return this.module;
+        }
+        return null;
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.Femhack.features.gui;
 import me.Femhack.Femhack;
 import me.Femhack.features.Feature;
 import me.Femhack.features.gui.components.Component;
+import me.Femhack.features.gui.components.items.Description;
 import me.Femhack.features.gui.particle.*;
 import me.Femhack.features.gui.components.items.Item;
 import me.Femhack.features.gui.components.items.buttons.ModuleButton;
@@ -23,6 +24,7 @@ import java.util.Random;
 
 public class FemhackGui
         extends GuiScreen {
+    private final Description description = new Description("Description", 500, 20, true);
     private static FemhackGui INSTANCE;
 
     static {
@@ -99,6 +101,8 @@ public class FemhackGui
         if (ClickGui.getInstance().darkBackGround.getValue()) {
             this.drawDefaultBackground();
         }
+        this.description.drag(mouseX, mouseY);
+        this.description.drawScreen(mouseX, mouseY);
         this.components.forEach(components -> components.drawScreen(mouseX, mouseY, partialTicks));
         if (ClickGui.getInstance().particleMode.getValue() == ClickGui.Mode.Normal) {
             this.particleSystem.tick(ClickGui.getInstance().pSpeed.getValue());
@@ -111,10 +115,12 @@ public class FemhackGui
     }
 
     public void mouseClicked(int mouseX, int mouseY, int clickedButton) {
+        this.description.mouseClicked(mouseX, mouseY, clickedButton);
         this.components.forEach(components -> components.mouseClicked(mouseX, mouseY, clickedButton));
     }
 
     public void mouseReleased(int mouseX, int mouseY, int releaseButton) {
+        this.description.mouseReleased(mouseX, mouseY, releaseButton);
         this.components.forEach(components -> components.mouseReleased(mouseX, mouseY, releaseButton));
     }
 
@@ -129,8 +135,10 @@ public class FemhackGui
     public void checkMouseWheel() {
         int dWheel = Mouse.getDWheel();
         if (dWheel < 0) {
+            Description.descY -= 10.0f;
             this.components.forEach(component -> component.setY(component.getY() - 10));
         } else if (dWheel > 0) {
+            Description.descY += 10.0f;
             this.components.forEach(component -> component.setY(component.getY() + 10));
         }
     }

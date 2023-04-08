@@ -10,7 +10,7 @@ public class SlowSwing extends Module
     public boolean isPressed;
 
     public SlowSwing() {
-        super("SwingSpeed", "", Module.Category.RENDER, true, false, false);
+        super("SwingSpeed", "Changes the speed of your swing", Module.Category.RENDER, true, false, false);
         this.isPressed = false;
         SlowSwing.instance = this;
     }

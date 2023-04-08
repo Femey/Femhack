@@ -26,9 +26,9 @@ public class SalhackDupe extends Module {
         super("SalhackDupe", "Perform SalC1 dupe automatically (Press esc to disable).", Module.Category.TROLL, true, false, false);
     }
 
-    private final Setting<Boolean> shulkerOnly = new Setting<Boolean>("ShulkerOnly", true);
-    private final Setting<Boolean> hitGround = new Setting<Boolean>("Ground", true);
-    public Setting<Float> Delay = new Setting<Float>("Delay", 1f, 0f, 10f);
+    private final Setting<Boolean> shulkerOnly = this.register(new Setting<Boolean>("ShulkerOnly", true));
+    private final Setting<Boolean> hitGround = this.register(new Setting<Boolean>("Ground", true));
+    public Setting<Float> Delay = this.register(new Setting<Float>("Delay", 1f, 0f, 10f));
 
     private boolean doDrop = false; //When to drop items from entity.
     private boolean doChest = false; //When to add items to entity.
