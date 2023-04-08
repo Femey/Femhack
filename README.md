@@ -11,6 +11,7 @@ Im back!!
 # Thingys i gotta work on >w<
 
 * kill feed
+* hud editor
 
 # Approvals
 
