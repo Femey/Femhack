@@ -31,6 +31,7 @@ public class Description
         this.x = descX;
         this.y = descY;
         this.height = (int)descH;
+        this.width = (int) descW;
         Description.open = open;
     }
 
@@ -45,7 +46,7 @@ public class Description
         this.drag(mouseX, mouseY);
         int color2 = ColorUtil.toARGB(ClickGui.getInstance().topRed.getValue(), ClickGui.getInstance().topGreen.getValue(), ClickGui.getInstance().topBlue.getValue(), 255);
         if (open) {
-            RenderUtil.drawRect(descX, descY - 4.0f, descW, descH, ColorUtil.toRGBA(0,0,0,119));
+            RenderUtil.drawRect(descX, descY - 4.0f,descX+ descW,descY+ descH, ColorUtil.toRGBA(0,0,0,119));
             RenderUtil.drawLine(descX+0.5f, descY - 3, descX+0.5f, descY+descH, 1.5f, color2); //left line
             RenderUtil.drawLine(descX-0.5f + descW, descY - 3 , descX-0.5f + descW, descY+descH, 1.5f, color2); //right line
             RenderUtil.drawLine(descX, descY + descH, descX + descW, descY + descH, 1.5f, color2); //Bottom line
