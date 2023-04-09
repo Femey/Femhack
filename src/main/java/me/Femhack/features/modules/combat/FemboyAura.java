@@ -156,6 +156,13 @@ public class FemboyAura
     public final /* synthetic */ Timer linearTimer;
     private /* synthetic */ float timePassed;
     private final /* synthetic */ Setting<Integer> oRed;
+    private final /* synthetic */ Setting<Integer> CRed;
+    private final /* synthetic */ Setting<Integer> CGreen;
+    private final /* synthetic */ Setting<Integer> CBlue;
+    private final /* synthetic */ Setting<Float> circleStep1;
+    private final /* synthetic */ Setting<Float> circleHeight;
+    private final /* synthetic */ Setting<Boolean> circle;
+
     public /* synthetic */ Setting<Float> enemyRange;
     public /* synthetic */ Setting<Integer> delay;
     private /* synthetic */ RayTraceResult postResult;
@@ -815,6 +822,19 @@ public class FemboyAura
         return true;
     }
 
+    @Override
+    public void onUpdate() {
+        if (circle.getValue()) {
+            prevCircleStep = circleStep;
+            circleStep += circleStep1.getValue();
+        }
+    }
+    public static double absSinAnimation(double input) {
+        return Math.abs(1 + Math.sin(input)) / 2;
+    }
+
+    private float prevCircleStep, circleStep;
+
     @SubscribeEvent
     @Override
     public void onRender3D(final Render3DEvent event) {
@@ -856,36 +876,76 @@ public class FemboyAura
             BlockRenderUtil.releaseGL();
             GlStateManager.pushMatrix();
             BlockRenderUtil.prepareGL();
-            final IRenderManager renderManager = (IRenderManager) FemboyAura.mc.getRenderManager();
-            final float[] hsb = Color.RGBtoHSB(this.bRed.getValue(), this.bGreen.getValue(), this.bBlue.getValue(), null);
-            float hue;
-            final float initialHue = hue = System.currentTimeMillis() % 7200L / 7200.0f;
-            int rgb = Color.getHSBColor(hue, hsb[1], hsb[2]).getRGB();
-            final ArrayList<Vec3d> vecs = new ArrayList<Vec3d>();
-            final double x = this.renderTarget.lastTickPosX + (this.renderTarget.posX - this.renderTarget.lastTickPosX) * event.getPartialTicks() - renderManager.getRenderPosX();
-            final double y = this.renderTarget.lastTickPosY + (this.renderTarget.posY - this.renderTarget.lastTickPosY) * event.getPartialTicks() - renderManager.getRenderPosY();
-            final double z = this.renderTarget.lastTickPosZ + (this.renderTarget.posZ - this.renderTarget.lastTickPosZ) * event.getPartialTicks() - renderManager.getRenderPosZ();
-            final double height = -Math.cos(System.currentTimeMillis() / 1000.0) * (this.renderTarget.height / 2.0) + this.renderTarget.height / 2.0;
-            GL11.glLineWidth((float)3f);
-            GL11.glBegin(1);
-            for (int i = 0; i <= 360; ++i) {
-                final Vec3d vec = new Vec3d(x + Math.sin(i * 3.141592653589793 / 180.0) * 0.5, y + height + 0.01, z + Math.cos(i * 3.141592653589793 / 180.0) * 0.5);
-                vecs.add(vec);
+            if (circle.getValue()) {
+                double cs = prevCircleStep + (circleStep - prevCircleStep) * mc.getRenderPartialTicks();
+                double prevSinAnim = absSinAnimation(cs - circleHeight.getValue());
+                double sinAnim = absSinAnimation(cs);
+                EntityLivingBase entity = FemboyAura.getInstance().renderTarget;
+                double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.getRenderPartialTicks() - ((IRenderManager)mc.getRenderManager()).getRenderPosX();
+                double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.getRenderPartialTicks() - ((IRenderManager)mc.getRenderManager()).getRenderPosY() + prevSinAnim * 1.8f;
+                double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.getRenderPartialTicks() - ((IRenderManager)mc.getRenderManager()).getRenderPosZ();
+                double nextY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.getRenderPartialTicks() - ((IRenderManager)mc.getRenderManager()).getRenderPosY() + sinAnim * 1.8f;
+
+                GL11.glPushMatrix();
+
+                boolean cullface = GL11.glIsEnabled(GL11.GL_CULL_FACE);
+                boolean texture = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
+                boolean blend = GL11.glIsEnabled(GL11.GL_BLEND);
+                boolean depth = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
+                boolean alpha = GL11.glIsEnabled(GL11.GL_ALPHA_TEST);
+
+
+                GL11.glDisable(GL11.GL_CULL_FACE);
+                GL11.glDisable(GL11.GL_TEXTURE_2D);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
+
+                GL11.glShadeModel(GL11.GL_SMOOTH);
+
+                GL11.glBegin(GL11.GL_QUAD_STRIP);
+                for (int i = 0; i <= 360; i++) {
+                    Color clr = new Color(CRed.getValue(), CGreen.getValue(), CBlue.getValue());
+                    GL11.glColor4f(clr.getRed() / 255f, clr.getGreen() / 255f, clr.getBlue() / 255f, 0.6F);
+                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i)) * this.renderTarget.width * 0.8, nextY, z + Math.sin(Math.toRadians(i)) * this.renderTarget.width * 0.8);
+
+                    GL11.glColor4f(clr.getRed() / 255f, clr.getGreen() / 255f, clr.getBlue() / 255f, 0.01F);
+                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i)) * this.renderTarget.width * 0.8, y, z + Math.sin(Math.toRadians(i)) * this.renderTarget.width * 0.8);
+                }
+
+                GL11.glEnd();
+                GL11.glEnable(GL11.GL_LINE_SMOOTH);
+                GL11.glBegin(GL11.GL_LINE_LOOP);
+                for (int i = 0; i <= 360; i++) {
+                    Color clr = new Color(CRed.getValue(), CGreen.getValue(), CBlue.getValue());
+                    GL11.glColor4f(clr.getRed() / 255f, clr.getGreen() / 255f, clr.getBlue() / 255f, 1F);
+                    GL11.glVertex3d(x + Math.cos(Math.toRadians(i)) * this.renderTarget.width * 0.8, nextY, z + Math.sin(Math.toRadians(i)) * this.renderTarget.width * 0.8);
+                }
+                GL11.glEnd();
+
+                if (!cullface)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH);
+
+                if (texture)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+
+                if (depth)
+                    GL11.glEnable(GL11.GL_DEPTH_TEST);
+
+                GL11.glShadeModel(GL11.GL_FLAT);
+
+                if (!blend)
+                    GL11.glDisable(GL11.GL_BLEND);
+                if (cullface)
+                    GL11.glEnable(GL11.GL_CULL_FACE);
+                if (alpha)
+                    GL11.glEnable(GL11.GL_ALPHA_TEST);
+                GL11.glPopMatrix();
+                GlStateManager.resetColor();
+                BlockRenderUtil.releaseGL();
+                GlStateManager.popMatrix();
             }
-            for (int j = 0; j < vecs.size() - 1; ++j) {
-                final int red = rgb >> 16 & 0xFF;
-                final int green = rgb >> 8 & 0xFF;
-                final int blue = rgb & 0xFF;
-                final float alpha = true ? (true ? ((float)Math.max(0.0, -0.3183098861837907 * Math.atan(Math.tan(3.141592653589793 * (j + 1.0f) / (float)vecs.size() + System.currentTimeMillis() / 1000.0)))) : ((float)Math.max(0.0, Math.abs(Math.sin((j + 1.0f) / vecs.size() * 3.141592653589793 + System.currentTimeMillis() / 1000.0)) * 2.0 - 1.0))) : (false ? 1.0f : (this.bAlpha.getValue() / 255.0f));
-                GL11.glColor4f(this.bRed.getValue() / 255.0f, this.bGreen.getValue() / 255.0f, this.bBlue.getValue() / 255.0f, alpha);
-                GL11.glVertex3d(vecs.get(j).x, vecs.get(j).y, vecs.get(j).z);
-                GL11.glVertex3d(vecs.get(j + 1).x, vecs.get(j + 1).y, vecs.get(j + 1).z);
-                rgb = Color.getHSBColor(hue, hsb[1], hsb[2]).getRGB();
-            }
-            GL11.glEnd();
-            GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-            BlockRenderUtil.releaseGL();
-            GlStateManager.popMatrix();
     }
 
     static {
@@ -1100,6 +1160,12 @@ public class FemboyAura
         this.oBlue = this.register(new Setting<Object>("OutlineBlue", Integer.valueOf(145), Integer.valueOf(0), Integer.valueOf(255), object -> this.outline.getValue() != false && this.setting.getValue() == Pages.Render));
         this.oAlpha = this.register(new Setting<Object>("OutlineAlpha", Integer.valueOf(111), Integer.valueOf(0), Integer.valueOf(255), object -> this.outline.getValue() != false && this.setting.getValue() == Pages.Render));
         this.lineWidth = this.register(new Setting<Object>("LineWidth", Float.valueOf(1.8f), Float.valueOf(0.1f), Float.valueOf(5.0f), object -> this.outline.getValue() != false && this.setting.getValue() == Pages.Render));
+        this.circle = this.register(new Setting<Object>("Circle", Boolean.valueOf(true), object -> this.setting.getValue() == Pages.Render));
+        this.circleStep1 = this.register(new Setting("CircleSpeed", 0.15f, 0.1f, 1.0f, object -> circle.getValue() && setting.getValue() == Pages.Render));
+        this.circleHeight = this.register(new Setting("CircleHeight", 0.15f, 0.1f, 1.0f, object -> circle.getValue() && setting.getValue() == Pages.Render));
+        this.CRed = this.register(new Setting<Object>("CircleRed", Integer.valueOf(64), Integer.valueOf(0), Integer.valueOf(255), object -> this.circle.getValue() != false && this.setting.getValue() == Pages.Render));
+        this.CGreen = this.register(new Setting<Object>("CircleGreen", Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(255), object -> this.circle.getValue() != false && this.setting.getValue() == Pages.Render));
+        this.CBlue = this.register(new Setting<Object>("CircleBlue", Integer.valueOf(145), Integer.valueOf(0), Integer.valueOf(255), object -> this.circle.getValue() != false && this.setting.getValue() == Pages.Render));
         this.debugG = this.register(new Setting<Boolean>("Debug", Boolean.valueOf(false), bl -> this.setting.getValue() == Pages.Development));
         this.handleSequential1 = this.register(new Setting<Boolean>("handleSequential", Boolean.valueOf(false), bl -> this.debugG.getValue() != false && this.setting.getValue() == Pages.Development));
         this.breakCrystal1 = this.register(new Setting<Boolean>("breakcrystal", Boolean.valueOf(false), bl -> this.debugG.getValue() != false && this.setting.getValue() == Pages.Development));
