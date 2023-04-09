@@ -14,7 +14,7 @@ import static me.Femhack.Femhack.*;
 public class Femhack {
     public static final String MODID = "femhack";
     public static final String MODNAME = "Femhack";
-    public static final String MODVER = "2.0";
+    public static final String MODVER = "2.1";
     public static final Logger LOGGER = LogManager.getLogger("Femhack");
     public static CommandManager commandManager;
     public static FriendManager friendManager;
