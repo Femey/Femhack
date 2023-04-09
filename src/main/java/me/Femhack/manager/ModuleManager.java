@@ -1,9 +1,11 @@
 package me.Femhack.manager;
 
+import akka.actor.Kill;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
 import me.Femhack.event.events.Render2DEvent;
 import me.Femhack.event.events.Render3DEvent;
+import me.Femhack.features.modules.client.KillFeed;
 import me.Femhack.features.modules.combat.*;
 import me.Femhack.features.modules.misc.*;
 import me.Femhack.features.modules.movement.*;
@@ -50,6 +52,7 @@ public class ModuleManager
         this.modules.add(new ChorusEsp());
         this.modules.add(new Velocity());
         this.modules.add(new HUD());
+        this.modules.add(new KillFeed());
         this.modules.add(new BlockHighlight());
         this.modules.add(new HoleESP());
         this.modules.add(new CrystalSpawns());

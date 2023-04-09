@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
 import me.Femhack.event.events.*;
+import me.Femhack.features.modules.client.KillFeed;
 import me.Femhack.features.modules.combat.AutoCrystal;
 import me.Femhack.features.modules.troll.ChinaText;
 import me.Femhack.util.Timer;

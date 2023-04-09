@@ -111,7 +111,7 @@ public class FemboyAura
     public /* synthetic */ Setting<Boolean> doinstantdebug;
     private /* synthetic */ BlockPos postPlacePos;
     private /* synthetic */ EntityEnderCrystal postBreakPos;
-    private /* synthetic */ EntityPlayer renderTarget;
+    public /* synthetic */ EntityPlayer renderTarget;
     private final /* synthetic */ Setting<Boolean> armorBreaker;
     public /* synthetic */ Setting<Float> breakSpeed;
     public final /* synthetic */ Timer breakTimer;
