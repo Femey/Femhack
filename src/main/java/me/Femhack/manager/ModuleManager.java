@@ -113,6 +113,7 @@ public class ModuleManager
         this.modules.add(new Step());
         this.modules.add(new Scaffold());
         this.modules.add(new FastPlace());
+        this.modules.add(new AutoWasp());
         this.modules.add(new ESP());
         this.modules.add(new Selftrap());
         this.modules.add(new NoHitBox());
