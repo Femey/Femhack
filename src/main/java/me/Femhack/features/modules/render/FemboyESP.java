@@ -37,6 +37,8 @@ public class FemboyESP extends Module
     private ResourceLocation femboy;
     private ICamera camera;
 
+    private String temp;
+
     public static final EventBus EVENT_BUS = MinecraftForge.EVENT_BUS;
 
     public FemboyESP() {
@@ -49,9 +51,9 @@ public class FemboyESP extends Module
     @Override
     public void onEnable() {
         FemboyESP.EVENT_BUS.register((Object)this);
-        Command.sendMessage("Toggle on and off to reload the image");
         this.femboy = null;
         this.onLoad();
+        this.temp = null;
     }
 
     @Override
@@ -107,8 +109,16 @@ public class FemboyESP extends Module
 
     @SubscribeEvent
     public void onRenderPlayer(final RenderPlayerEvent.Pre event) {
+        if (!this.imageUrl.getValue().name().equals(this.temp)){
+            this.onLoad();
+            temp = this.imageUrl.getValue().name();
+        }
         if (this.noRenderPlayers.getValue() && !event.getEntity().equals((Object) FemboyESP.mc.player)) {
             event.setCanceled(true);
+        }
+        if (temp != this.imageUrl.getValue().name()){
+            this.onLoad();
+            this.temp = this.imageUrl.getValue().name();
         }
     }
 
