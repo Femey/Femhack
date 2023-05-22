@@ -100,6 +100,7 @@ public class ModuleManager
         this.modules.add(new AssESP());
         this.modules.add(new AutoSex());
         this.modules.add(new AutoSignKick());
+        this.modules.add(new PistonCrystal());
         this.modules.add(new OffhandPlus());
         this.modules.add(new DonkeyFinder());
         this.modules.add(new BowBomb());
@@ -108,8 +109,8 @@ public class ModuleManager
         this.modules.add(new Coordleaker());
         this.modules.add(new NoChinaText());
         this.modules.add(new PenisESP());
-        this.modules.add(new CevBreaker());
         this.modules.add(new Suicide());
+        this.modules.add(new OpenPacketCanceller());
         this.modules.add(new Step());
         this.modules.add(new Scaffold());
         this.modules.add(new FastPlace());

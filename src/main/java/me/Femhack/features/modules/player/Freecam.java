@@ -125,7 +125,7 @@ public class Freecam extends Module {
 
     @Override
     public void onLogout() {
-        if (this.disable.getValue()) {
+        if (this.disable.getValue() && this.isEnabled()) {
             this.disable();
         }
     }

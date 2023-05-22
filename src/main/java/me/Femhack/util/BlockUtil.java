@@ -11,9 +11,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.network.play.client.CPacketAnimation;
-import net.minecraft.network.play.client.CPacketEntityAction;
-import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.network.play.client.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
@@ -33,10 +31,12 @@ import net.minecraft.block.BlockSnow;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.init.Items;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.util.math.*;
 
 import java.util.Collection;
+
+import static me.Femhack.util.EntityUtil.getPlayerPos;
+import static me.Femhack.util.WorldUtils.getPlaceableSide;
 
 
 public class BlockUtil
@@ -48,9 +48,76 @@ public class BlockUtil
 
     public static List<BlockPos> getBlockSphere(float breakRange, Class clazz) {
         NonNullList positions = NonNullList.create();
-        positions.addAll(BlockUtil.getSphere(EntityUtil.getPlayerPos(BlockUtil.mc.player), breakRange, (int) breakRange, false, true, 0).stream().filter(pos -> clazz.isInstance(BlockUtil.mc.world.getBlockState(pos).getBlock())).collect(Collectors.toList()));
+        positions.addAll(BlockUtil.getSphere(getPlayerPos(BlockUtil.mc.player), breakRange, (int) breakRange, false, true, 0).stream().filter(pos -> clazz.isInstance(BlockUtil.mc.world.getBlockState(pos).getBlock())).collect(Collectors.toList()));
         return positions;
     }
+
+    public static EnumFacing getPlaceableSide(BlockPos blockPos) {
+        for (EnumFacing enumFacing : EnumFacing.values()) {
+            IBlockState iBlockState;
+            BlockPos blockPos2 = blockPos.offset(enumFacing);
+            if (!BlockUtil.mc.world.getBlockState(blockPos2).getBlock().canCollideCheck(BlockUtil.mc.world.getBlockState(blockPos2), false) || (iBlockState = BlockUtil.mc.world.getBlockState(blockPos2)).getMaterial().isReplaceable()) continue;
+            return enumFacing;
+        }
+        return null;
+    }
+
+    public static Vec3d getEyesPos() {
+        return new Vec3d(BlockUtil.mc.player.posX, BlockUtil.mc.player.posY + (double)BlockUtil.mc.player.getEyeHeight(), BlockUtil.mc.player.posZ);
+    }
+
+    private static float[] getNeededRotations(Vec3d vec3d) {
+        Vec3d vec3d2 = BlockUtil.getEyesPos();
+        double d = vec3d.x - vec3d2.x;
+        double d2 = vec3d.y - vec3d2.y;
+        double d3 = vec3d.z - vec3d2.z;
+        double d4 = Math.sqrt(d * d + d3 * d3);
+        float f = (float)Math.toDegrees(Math.atan2(d3, d)) - 90.0f;
+        float f2 = (float)(-Math.toDegrees(Math.atan2(d2, d4)));
+        return new float[]{BlockUtil.mc.player.rotationYaw + MathHelper.wrapDegrees((float)(f - BlockUtil.mc.player.rotationYaw)), BlockUtil.mc.player.rotationPitch + MathHelper.wrapDegrees((float)(f2 - BlockUtil.mc.player.rotationPitch))};
+    }
+
+    public static void faceVectorPacketInstant(Vec3d vec3d) {
+        float[] arrf = BlockUtil.getNeededRotations(vec3d);
+        BlockUtil.mc.player.connection.sendPacket((Packet)new CPacketPlayer.Rotation(arrf[0], arrf[1], BlockUtil.mc.player.onGround));
+    }
+
+
+    public static void rightClickBlock(final BlockPos pos, final Vec3d vec, final EnumHand hand, final EnumFacing direction) {
+        final float f = (float)(vec.x - pos.getX());
+        final float f2 = (float)(vec.y - pos.getY());
+        final float f3 = (float)(vec.z - pos.getZ());
+        BlockUtil.mc.player.connection.sendPacket((Packet)new CPacketPlayerTryUseItemOnBlock(pos, direction, hand, f, f2, f3));
+    }
+
+
+
+    public static boolean placeBlock(final BlockPos pos, final boolean packet) {
+        final Block block = BlockUtil.mc.world.getBlockState(pos).getBlock();
+        if (!(block instanceof BlockAir) && !(block instanceof BlockLiquid)) {
+            return false;
+        }
+        final EnumFacing side = getPlaceableSide(pos);
+        if (side == null) {
+            return false;
+        }
+        final BlockPos neighbour = pos.offset(side);
+        final EnumFacing opposite = side.getOpposite();
+        if (!canBeClicked(neighbour)) {
+            return false;
+        }
+        final Vec3d hitVec = new Vec3d((Vec3i)neighbour).add(0.5, 0.5, 0.5).add(new Vec3d(opposite.getDirectionVec()).scale(0.5));
+        final Block neighbourBlock = BlockUtil.mc.world.getBlockState(neighbour).getBlock();
+        if (packet) {
+            rightClickBlock(neighbour, hitVec, EnumHand.MAIN_HAND, opposite);
+        }
+        else {
+            BlockUtil.mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, neighbour, opposite, hitVec, EnumHand.MAIN_HAND);
+            BlockUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
+        }
+        return true;
+    }
+
 
     public static boolean isIntercepted(BlockPos blockPos) {
         for (Entity entity : BlockUtil.mc.world.loadedEntityList) {
@@ -59,6 +126,27 @@ public class BlockUtil
             return true;
         }
         return false;
+    }
+
+    public static boolean hasNeighbour(final BlockPos blockPos) {
+        for (final EnumFacing side : EnumFacing.values()) {
+            final BlockPos neighbour = blockPos.offset(side);
+            if (!BlockUtil.mc.world.getBlockState(neighbour).getMaterial().isReplaceable() && !BlockUtil.blackList.contains(getBlock(neighbour))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void rightClickBlock(final BlockPos pos, final EnumFacing facing, final boolean packet) {
+        final Vec3d hitVec = new Vec3d((Vec3i)pos).add(0.5, 0.5, 0.5).add(new Vec3d(facing.getDirectionVec()).scale(0.5));
+        if (packet) {
+            rightClickBlock(pos, hitVec, EnumHand.MAIN_HAND, facing);
+        }
+        else {
+            BlockUtil.mc.playerController.processRightClickBlock(BlockUtil.mc.player, BlockUtil.mc.world, pos, facing, hitVec, EnumHand.MAIN_HAND);
+            BlockUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
+        }
     }
 
     public static EnumFacing getFacing(BlockPos pos) {
@@ -288,7 +376,7 @@ public class BlockUtil
 
     public static List<BlockPos> possiblePlacePositions(float placeRange) {
         NonNullList positions = NonNullList.create();
-        positions.addAll((Collection)BlockUtil.getSphere(EntityUtil.getPlayerPos((EntityPlayer)BlockUtil.mc.player), placeRange, (int)placeRange, false, true, 0).stream().filter(BlockUtil::canPlaceCrystal).collect(Collectors.toList()));
+        positions.addAll((Collection)BlockUtil.getSphere(getPlayerPos((EntityPlayer)BlockUtil.mc.player), placeRange, (int)placeRange, false, true, 0).stream().filter(BlockUtil::canPlaceCrystal).collect(Collectors.toList()));
         return positions;
     }
 
@@ -363,7 +451,7 @@ public class BlockUtil
 
     public static List<BlockPos> possiblePlacePositions(float placeRange, boolean specialEntityCheck, boolean oneDot15, boolean cc) {
         NonNullList positions = NonNullList.create();
-        positions.addAll((Collection)BlockUtil.getSphere(EntityUtil.getPlayerPos((EntityPlayer)BlockUtil.mc.player), placeRange, (int)placeRange, false, true, 0).stream().filter(pos -> BlockUtil.canPlaceCrystal(pos, specialEntityCheck, oneDot15, cc)).collect(Collectors.toList()));
+        positions.addAll((Collection)BlockUtil.getSphere(getPlayerPos((EntityPlayer)BlockUtil.mc.player), placeRange, (int)placeRange, false, true, 0).stream().filter(pos -> BlockUtil.canPlaceCrystal(pos, specialEntityCheck, oneDot15, cc)).collect(Collectors.toList()));
         return positions;
     }
 

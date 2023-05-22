@@ -9,10 +9,13 @@ import com.mojang.util.UUIDTypeAdapter;
 import me.Femhack.features.command.Command;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import org.apache.commons.io.IOUtils;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -21,6 +24,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static me.Femhack.util.EntityUtil.getPlayerPos;
 
 public class PlayerUtil implements Util {
     private static final JsonParser PARSER = new JsonParser();
@@ -35,6 +40,52 @@ public class PlayerUtil implements Util {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static double getDistance(final Entity entity) {
+        return PlayerUtil.mc.player.getDistance(entity);
+    }
+
+    public static double getDistance(final BlockPos pos) {
+        return PlayerUtil.mc.player.getDistance((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+    }
+
+
+    public static EntityPlayer getLookingPlayer(final double range) {
+        final List<EntityPlayer> players = new ArrayList<EntityPlayer>(PlayerUtil.mc.world.playerEntities);
+        for (int i = 0; i < players.size(); ++i) {
+            if (getDistance((Entity)players.get(i)) > range) {
+                players.remove(i);
+            }
+        }
+        players.remove(PlayerUtil.mc.player);
+        EntityPlayer target = null;
+        final Vec3d positionEyes = PlayerUtil.mc.player.getPositionEyes(PlayerUtil.mc.getRenderPartialTicks());
+        final Vec3d rotationEyes = PlayerUtil.mc.player.getLook(PlayerUtil.mc.getRenderPartialTicks());
+        final int precision = 2;
+        for (int j = 0; j < (int)range; ++j) {
+            for (int k = precision; k > 0; --k) {
+                for (final EntityPlayer targetTemp : players) {
+                    final AxisAlignedBB playerBox = targetTemp.getEntityBoundingBox();
+                    final double xArray = positionEyes.x + rotationEyes.x * j + rotationEyes.x / k;
+                    final double yArray = positionEyes.y + rotationEyes.y * j + rotationEyes.y / k;
+                    final double zArray = positionEyes.z + rotationEyes.z * j + rotationEyes.z / k;
+                    if (playerBox.maxY >= yArray && playerBox.minY <= yArray && playerBox.maxX >= xArray && playerBox.minX <= xArray && playerBox.maxZ >= zArray && playerBox.minZ <= zArray) {
+                        target = targetTemp;
+                    }
+                }
+            }
+        }
+        return target;
+    }
+
+    public static EntityPlayer getNearestPlayer(final double range) {
+        return (EntityPlayer)PlayerUtil.mc.world.playerEntities.stream().filter(p -> PlayerUtil.mc.player.getDistance(p) <= range).filter(p -> PlayerUtil.mc.player.getEntityId() != p.getEntityId()).min(Comparator.comparing(p -> PlayerUtil.mc.player.getDistance(p))).orElse(null);
+    }
+
+
+    public static double getDistanceI(final BlockPos pos) {
+        return getPlayerPos((EntityPlayer)PlayerUtil.mc.player).getDistance(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static BlockPos getPlayerPosFloored() {

@@ -73,6 +73,22 @@ public class EntityUtil
         }
     }
 
+    public static EntityPlayer getTargetDouble(double d) {
+        EntityPlayer entityPlayer = null;
+        int n = EntityUtil.mc.world.playerEntities.size();
+        for (int i = 0; i < n; ++i) {
+            EntityPlayer entityPlayer2 = (EntityPlayer)EntityUtil.mc.world.playerEntities.get(i);
+            if (EntityUtil.isntValid((Entity)entityPlayer2, d)) continue;
+            if (entityPlayer == null) {
+                entityPlayer = entityPlayer2;
+                continue;
+            }
+            if (!(EntityUtil.mc.player.getDistanceSq((Entity)entityPlayer2) < EntityUtil.mc.player.getDistanceSq((Entity)entityPlayer))) continue;
+            entityPlayer = entityPlayer2;
+        }
+        return entityPlayer;
+    }
+
     public static EntityLivingBase getTarget(boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, double d, int n) {
         EntityLivingBase entityLivingBase = null;
         if (n == 0) {
