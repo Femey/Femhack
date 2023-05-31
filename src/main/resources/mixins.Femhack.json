@@ -24,6 +24,7 @@
     "accessors.ICPacketUseEntity",
     "accessors.IEntityLivingBase",
     "accessors.IEntityPlayerSP",
-    "accessors.IRenderManager"
+    "accessors.IRenderManager",
+    "accessors.IEntityRenderer"
   ]
 }

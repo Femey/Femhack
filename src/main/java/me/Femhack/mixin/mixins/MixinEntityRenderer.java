@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import me.Femhack.Femhack;
 import me.Femhack.features.modules.misc.NoHitBox;
 import me.Femhack.features.modules.render.Ambience;
+import me.Femhack.features.modules.render.Weather;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -24,8 +25,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(value = {EntityRenderer.class})
-public class MixinEntityRenderer {
+@Mixin({EntityRenderer.class})
+public abstract class MixinEntityRenderer {
     @Shadow
     @Final
     private int[] lightmapColors;
@@ -36,6 +37,13 @@ public class MixinEntityRenderer {
             return new ArrayList<Entity>();
         }
         return worldClient.getEntitiesInAABBexcluding(entityIn, boundingBox, predicate);
+    }
+
+    @Inject(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;renderRainSnow(F)V"))
+    public void weatherHook(int pass, float partialTicks, long finishTimeNano, CallbackInfo ci) {
+        if (Femhack.moduleManager.getModuleByClass(Weather.class).isOn()) {
+            Femhack.moduleManager.getModuleByClass(Weather.class).render(partialTicks);
+        }
     }
 
     @Inject(method = "updateLightmap", at = @At( value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;updateDynamicTexture()V", shift = At.Shift.BEFORE ))

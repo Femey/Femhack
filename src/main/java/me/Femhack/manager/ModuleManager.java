@@ -122,6 +122,7 @@ public class ModuleManager
         this.modules.add(new SelfFill());
         this.modules.add(new ArrowESP());
         this.modules.add(new FemboyESP());
+        this.modules.add(new Weather());
     }
 
     public Module getModuleByName(String name) {
