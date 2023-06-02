@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.*;
 
+import me.Femhack.event.events.MoveEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockDeadBush;
@@ -34,6 +35,7 @@ import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -72,6 +74,7 @@ public class EntityUtil
             EntityUtil.mc.player.swingArm(EnumHand.MAIN_HAND);
         }
     }
+
 
     public static EntityPlayer getTargetDouble(double d) {
         EntityPlayer entityPlayer = null;
@@ -585,12 +588,18 @@ public class EntityUtil
         return player.getHeldItemMainhand().getItem() instanceof ItemSword || player.getHeldItemMainhand().getItem() instanceof ItemAxe;
     }
 
-    public static double getMaxSpeed() {
-        double maxModifier = 0.2873;
-        if (EntityUtil.mc.player.isPotionActive(Objects.requireNonNull(Potion.getPotionById(1)))) {
-            maxModifier *= 1.0 + 0.2 * (double) (Objects.requireNonNull(EntityUtil.mc.player.getActivePotionEffect(Objects.requireNonNull(Potion.getPotionById(1)))).getAmplifier() + 1);
+    public static double getMaxSpeed(boolean slowness) {
+        int amplifier;
+        double defaultSpeed = 0.2873;
+        if (mc.player.isPotionActive(MobEffects.SPEED)) {
+            amplifier = Objects.requireNonNull(mc.player.getActivePotionEffect(MobEffects.SPEED)).getAmplifier();
+            defaultSpeed *= 1.0 + 0.2 * (double)(amplifier + 1);
         }
-        return maxModifier;
+        if (slowness && mc.player.isPotionActive(MobEffects.SLOWNESS)) {
+            amplifier = Objects.requireNonNull(mc.player.getActivePotionEffect(MobEffects.SLOWNESS)).getAmplifier();
+            defaultSpeed /= 1.0 + 0.2 * (double)(amplifier + 1);
+        }
+        return defaultSpeed;
     }
 
     public static void mutliplyEntitySpeed(Entity entity, double multiplier) {

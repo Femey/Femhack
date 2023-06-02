@@ -51,6 +51,7 @@ public class ModuleManager
         this.modules.add(new ExtraTab());
         this.modules.add(new ChorusEsp());
         this.modules.add(new Velocity());
+        this.modules.add(new InstantSpeed());
         this.modules.add(new HUD());
         this.modules.add(new KillFeed());
         this.modules.add(new BlockHighlight());

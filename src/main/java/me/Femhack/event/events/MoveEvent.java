@@ -1,19 +1,19 @@
 package me.Femhack.event.events;
 
+
 import me.Femhack.event.EventStage;
 import net.minecraft.entity.MoverType;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 
 @Cancelable
-public class MoveEvent
-        extends EventStage {
+public class MoveEvent extends EventStage
+{
     private MoverType type;
     private double x;
     private double y;
     private double z;
 
-    public MoveEvent(int stage, MoverType type, double x, double y, double z) {
-        super(stage);
+    public MoveEvent(final MoverType type, final double x, final double y, final double z) {
         this.type = type;
         this.x = x;
         this.y = y;
@@ -24,7 +24,7 @@ public class MoveEvent
         return this.type;
     }
 
-    public void setType(MoverType type) {
+    public void setType(final MoverType type) {
         this.type = type;
     }
 
@@ -32,7 +32,7 @@ public class MoveEvent
         return this.x;
     }
 
-    public void setX(double x) {
+    public void setX(final double x) {
         this.x = x;
     }
 
@@ -40,7 +40,7 @@ public class MoveEvent
         return this.y;
     }
 
-    public void setY(double y) {
+    public void setY(final double y) {
         this.y = y;
     }
 
@@ -48,8 +48,7 @@ public class MoveEvent
         return this.z;
     }
 
-    public void setZ(double z) {
+    public void setZ(final double z) {
         this.z = z;
     }
 }
-
