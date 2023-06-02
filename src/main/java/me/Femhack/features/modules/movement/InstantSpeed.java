@@ -16,7 +16,7 @@ public class InstantSpeed extends Module {
 
     @SubscribeEvent
     public void listen(final MoveEvent event) {
-        if (this.mc.player.isSneaking() || this.mc.player.isInWater() || this.mc.player.isInLava()) {
+        if (this.mc.player.isSneaking() || this.mc.player.isInWater() || this.mc.player.isInLava() || mc.player.isElytraFlying() || mc.player.capabilities.isFlying) {
             return;
         }
         final MovementInput movementInput = this.mc.player.movementInput;
