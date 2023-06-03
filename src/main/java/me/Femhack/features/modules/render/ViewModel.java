@@ -3,6 +3,7 @@ package me.Femhack.features.modules.render;
 import me.Femhack.event.events.RenderItemEvent;
 import me.Femhack.features.modules.Module;
 import me.Femhack.features.setting.Setting;
+import me.Femhack.util.Timer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ViewModel extends Module
@@ -29,6 +30,12 @@ public class ViewModel extends Module
     public Setting<Integer> offRotX = this.register(new Setting("OffRotationX", 0, (-36), 36, v -> this.settings.getValue() == Settings.ROTATE));
     public Setting<Integer> offRotY = this.register(new Setting("OffRotationY", 0, (-36), 36, v -> this.settings.getValue() == Settings.ROTATE));
     public Setting<Integer> offRotZ = this.register(new Setting("OffRotationZ", 0, (-36), 36, v -> this.settings.getValue() == Settings.ROTATE));
+    public Setting<Boolean> animationY = this.register(new Setting("AnimationY", false, v -> this.settings.getValue() == Settings.ROTATE));
+    public Setting<Integer> delayY = this.register(new Setting("Delay Y", 0, 0, 100, v -> this.settings.getValue() == Settings.ROTATE));
+    public Setting<Boolean> animationX = this.register(new Setting("AnimationX", false, v -> this.settings.getValue() == Settings.ROTATE));
+    public Setting<Integer> delayX = this.register(new Setting("Delay X", 0, 0, 100, v -> this.settings.getValue() == Settings.ROTATE));
+    public Setting<Boolean> animationZ = this.register(new Setting("AnimationZ", false, v -> this.settings.getValue() == Settings.ROTATE));
+    public Setting<Integer> delayZ = this.register(new Setting("Delay Z", 0, 0, 100, v -> this.settings.getValue() == Settings.ROTATE));
     public Setting<Double> offScaleX = this.register(new Setting("OffScaleX", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
     public Setting<Double> offScaleY = this.register(new Setting("OffScaleY", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
     public Setting<Double> offScaleZ = this.register(new Setting("OffScaleZ", 1.0, 0.1, 5.0, v -> this.settings.getValue() == Settings.SCALE));
@@ -53,8 +60,57 @@ public class ViewModel extends Module
         ViewModel.INSTANCE = this;
     }
 
+    int roty = 0;
+    int offroty = 0;
+    int rotx = 0;
+    int offrotx = 0;
+    int rotz = 0;
+    int offrotz = 0;
+    Timer timer = new Timer();
+    Timer timer2 = new Timer();
+    Timer timer3 = new Timer();
+
     @SubscribeEvent
     public void onItemRender(final RenderItemEvent event) {
+        if (animationY.getValue() && timer.passedMs(delayY.getValue())){
+            if (roty >= 36){
+                roty = -36;
+            }
+            roty += 1;
+            if (offroty <= -36){
+                offroty = 36;
+            }
+            offroty -= 1;
+            mainRotY.setValue(roty);
+            offRotY.setValue(offroty);
+            timer.reset();
+        }
+        if (animationX.getValue() && timer2.passedMs(delayX.getValue())){
+            if (rotx >= 36){
+                rotx = -36;
+            }
+            rotx += 1;
+            if (offrotx <= -36){
+                offrotx = 36;
+            }
+            offrotx -= 1;
+            mainRotX.setValue(rotx);
+            offRotX.setValue(offrotx);
+            timer2.reset();
+        }
+        if (animationZ.getValue() && timer3.passedMs(delayZ.getValue())){
+            if (rotz >= 36){
+                rotz = -36;
+            }
+            rotz += 1;
+            if (offrotz <= -36){
+                offrotz = 36;
+            }
+            offrotz -= 1;
+            mainRotZ.setValue(rotz);
+            offRotZ.setValue(offrotz);
+            timer3.reset();
+        }
         event.setMainX(this.mainX.getValue());
         event.setMainY(this.mainY.getValue());
         event.setMainZ(this.mainZ.getValue());
