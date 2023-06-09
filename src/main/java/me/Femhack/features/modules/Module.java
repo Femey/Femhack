@@ -189,7 +189,9 @@ public class Module
         MOVEMENT("Movement"),
         PLAYER("Player"),
         TROLL("Troll"),
+        SAL("Salhack"),
         CLIENT("Client");
+
 
         private final String name;
 

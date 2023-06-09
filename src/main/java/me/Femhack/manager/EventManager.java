@@ -6,6 +6,7 @@ import me.Femhack.Femhack;
 import me.Femhack.event.events.*;
 import me.Femhack.features.modules.client.KillFeed;
 import me.Femhack.features.modules.combat.AutoCrystal;
+import me.Femhack.features.modules.render.DeathEffects;
 import me.Femhack.features.modules.troll.ChinaText;
 import me.Femhack.util.Timer;
 import me.Femhack.features.Feature;
@@ -93,6 +94,9 @@ public class EventManager extends Feature {
                     continue;
                 }
                 MinecraftForge.EVENT_BUS.post(new DeathEvent(player));
+                if (DeathEffects.getInstance().isEnabled()){
+                    DeathEffects.getInstance().onDeath(player);
+                }
                 if (!PopCounter.getInstance().isEnabled()){
                     continue;
                 }

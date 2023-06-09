@@ -1,4 +1,4 @@
-package me.Femhack.features.modules.troll;
+package me.Femhack.features.modules.schem;
 
 import me.Femhack.features.command.Command;
 import me.Femhack.features.modules.Module;
@@ -23,7 +23,7 @@ import java.util.Comparator;
 public class SalhackDupe extends Module {
 
     public SalhackDupe() {
-        super("SalhackDupe", "Perform SalC1 dupe automatically (Press esc to disable).", Module.Category.TROLL, true, false, false);
+        super("SalhackDupe", "Perform SalC1 dupe automatically (Press esc to disable).", Category.SAL, true, false, false);
     }
 
     private final Setting<Boolean> shulkerOnly = this.register(new Setting<Boolean>("ShulkerOnly", true));

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class Description
         extends Item {
     public static float descX = 690.0f;
-    public static float descY = 20.0f;
+    public static float descY = 300.0f;
     public static float descH = 25.0f;
     public static float descW = 250f;
     private final ArrayList<Item> items = new ArrayList();

@@ -1,6 +1,5 @@
 package me.Femhack.manager;
 
-import akka.actor.Kill;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import me.Femhack.Femhack;
 import me.Femhack.event.events.Render2DEvent;
@@ -11,6 +10,8 @@ import me.Femhack.features.modules.misc.*;
 import me.Femhack.features.modules.movement.*;
 import me.Femhack.features.modules.player.*;
 import me.Femhack.features.modules.render.*;
+import me.Femhack.features.modules.schem.Printer;
+import me.Femhack.features.modules.schem.SalhackDupe;
 import me.Femhack.features.modules.troll.*;
 import me.Femhack.util.Util;
 import me.Femhack.features.Feature;
@@ -43,9 +44,12 @@ public class ModuleManager
         this.modules.add(new ClickGui());
         this.modules.add(new AutoHoleFill());
         this.modules.add(new ElytraFly());
+        this.modules.add(new Printer());
         this.modules.add(new AutoTolon());
         this.modules.add(new SalhackDupe());
         this.modules.add(new FemboyAura());
+        this.modules.add(new DeathEffects());
+        this.modules.add(new TrueDura());
         this.modules.add(new PopChams());
         this.modules.add(new FontMod());
         this.modules.add(new ExtraTab());
