@@ -36,7 +36,7 @@ public class DeathEffects extends Module {
 
 
     public void onDeath(EntityPlayer player) {
-        if (DeathEffects.INSTANCE.isEnabled() && (timer.passedMs(200) || player != person || player != mc.player)) {
+        if (DeathEffects.INSTANCE.isEnabled() && (timer.passedMs(200) || player != person) && player != mc.player) {
             person = player;
             final EntityLightningBolt bolt = new EntityLightningBolt(DeathEffects.mc.world, player.posX, player.posY, player.posZ, true);
             DeathEffects.mc.world.spawnEntity((Entity)bolt);
