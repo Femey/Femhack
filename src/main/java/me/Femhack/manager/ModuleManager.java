@@ -41,6 +41,7 @@ public class ModuleManager
     public Animation animationThread;
 
     public void init() {
+        this.modules.add(new Aspect());
         this.modules.add(new ViagraPlayers());
         this.modules.add(new ClickGui());
         this.modules.add(new AutoHoleFill());
